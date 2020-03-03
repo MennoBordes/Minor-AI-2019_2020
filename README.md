@@ -5,6 +5,7 @@
 1. Setup of X-plane
 2. Current working file
 3. Additional info
+4. Currently active
 
 # 1. Check if X Plane is set up corectly:
 * Under Data output > General Data output > 
@@ -29,3 +30,6 @@ In order to stop running, simply press 'esc' while the terminal is selected.
 
 # 3. Additional info
 In the X-plane_instuctions folder are a couple of files that will be useful for reading/writing data from/to X-Plane
+
+# 4. Currently active
+View the 'todo' file in the xplane folder for the following steps
