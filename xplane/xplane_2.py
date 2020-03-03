@@ -1,6 +1,3 @@
-# Class to get dataref values from XPlane Flight Simulator via network.
-# License: GPLv3
-
 import socket
 import struct
 import binascii
@@ -37,22 +34,16 @@ class XPlaneUdp:
         # values from xplane
         self.BeaconData = {}
         self.xplaneValues = {}
+        # ============= The default GET frequency / second, 1 for testing =============
         self.defaultFreq = 1
 
-        # values for upload to xplane
-        self.datawriIdx = 0
-        self.dataWrites = {} # key = idx, value = dataWrite
-
-    # def removeReader(self):
-    #     for _ in range(len(self.datarefs)):
-    #         self.AddDataReader(next(iter(self.datarefs.values())),freq=0)
-    # def removeWriter
+        # values for upload to xplane           WORK IN PROGRESS
+        self.datawriteIdx = 0
+        self.dataWrites = {}  # key = idx, value = dataWrite
 
     def __del__(self):
-        
         for _ in range(len(self.datarefs)):
             self.AddDataReader(next(iter(self.datarefs.values())), freq=0)
-    
         for _ in range(len(self.dataWrites)):
             self.AddDataWriter(next(iter(self.dataWrites.values())), freq=0)
         self.socket.close()
@@ -86,23 +77,24 @@ class XPlaneUdp:
         assert(len(message) == 413)
         self.socket.sendto(message, (self.BeaconData["IP"], self.UDP_PORT))
 
-    def AddDataWriter(self, dataWrite,freq=None):
+    def AddDataWriter(self, dataWrite, freq=None):      # WORK IN PROGRESS
         idx = -9999
 
         if freq == None:
             freq = self.defaultFreq
-        
+
         if dataWrite in self.dataWrites.values():
-            idx = list(self.dataWrites.keys())[list(self.dataWrites.values()).index(dataWrite)]
+            idx = list(self.dataWrites.keys())[
+                list(self.dataWrites.values()).index(dataWrite)]
             if freq == 0:
                 if dataWrite in self.xplaneValues.keys():
                     del self.xplaneValues[dataWrite]
                 del self.dataWrites[idx]
         else:
-            idx = self.datawriIdx
-            self.dataWrites[self.datawriIdx] = dataWrite
-            self.datawriIdx +=1
-        
+            idx = self.datawriteIdx
+            self.dataWrites[self.datawriteIdx] = dataWrite
+            self.datawriteIdx += 1
+
         cmd = b"RREF\x00"
         string = dataWrite.encode()
         message = struct.pack("<5sii400s", cmd, freq, idx, string)
@@ -131,8 +123,9 @@ class XPlaneUdp:
                     (idx, value) = struct.unpack("<if", singledata)
                     # print("(idx,value)",(idx,value))
                     if idx in self.datarefs.keys():
+                        # Only convert int / float
                         # convert -0.0 values to positive 0.0
-                        if value < 0.0 and value > -0.001:
+                        if (isinstance(value, float) or isinstance(value, int)) and value < 0.0 and value > -0.001:
                             value = 0.0
                         retvalues[self.datarefs[idx]] = value
             self.xplaneValues.update(retvalues)
@@ -142,20 +135,11 @@ class XPlaneUdp:
 
     def WriteValues(self):
         try:
-            # Send packet
-            self.socket
-        except:
-            raise XPlaneTimeout
-
-    def WriteValues(self):
-        try:
             # Create packet
             self.socket.send()
         except:
             raise XPlaneTimeout
         return
-
-# sim/engines/throttle_up 5 *
 
     def FindIp(self):
         '''
@@ -178,7 +162,7 @@ class XPlaneUdp:
 
         while not self.BeaconData:
 
-                # receive data
+            # receive data
             try:
                 packet, sender = sock.recvfrom(15000)
 
@@ -234,6 +218,47 @@ class XPlaneUdp:
         sock.close()
         return self.BeaconData
 
+    def AddAbles(self, altitude=False, position=False, speed=False):
+        """
+        Function for instantiating the requests
+        """
+
+        if False:
+            altitude = False
+            position = False
+            speed = False
+        if altitude:
+            self.AddDataReader("sim/cockpit2/gauges/indicators/altitude_ft_copilot")
+            self.AddDataReader("sim/cockpit2/gauges/indicators/altitude_ft_pilot")
+            self.AddDataReader("sim/cockpit2/gauges/indicators/altitude_ft_stby")
+        if position:
+            self.AddDataReader("sim/flightmodel/position/local_x")
+            self.AddDataReader("sim/flightmodel/position/local_y")
+            self.AddDataReader("sim/flightmodel/position/Prad")
+            self.AddDataReader("sim/flightmodel/position/Qrad")
+            self.AddDataReader("sim/flightmodel/position/Rrad")
+        if speed:
+            self.AddDataReader("sim/flightmodel/position/groundspeed")
+            self.AddDataReader("sim/flightmodel/position/indicated_airspeed")
+            self.AddDataReader("sim/flightmodel/position/indicated_airspeed2")
+            self.AddDataReader("sim/flightmodel/position/true_airspeed")
+        
+
+        # Testing
+        
+        # self.AddDataReader("sim/world/winch/winch_speed_knots")
+        self.AddDataReader("sim/weather/wind_altitude_msl_m[0]")
+        self.AddDataReader("sim/weather/wind_direction_degt[0]")
+        self.AddDataReader("sim/weather/wind_speed_kt[0]")
+        self.AddDataReader("sim/weather/wind_altitude_msl_m[1]")
+        self.AddDataReader("sim/weather/wind_direction_degt[1]")
+        self.AddDataReader("sim/weather/wind_speed_kt[1]")
+        self.AddDataReader("sim/weather/wind_altitude_msl_m[2]")
+        self.AddDataReader("sim/weather/wind_direction_degt[2]")
+        self.AddDataReader("sim/weather/wind_speed_kt[2]")
+
+
+
 
 # Example how to use:
 # You need a running xplane in your network.
@@ -246,28 +271,24 @@ if __name__ == '__main__':
         print(beacon)
         print()
 
-        xp.AddDataWriter("sim/engines/throttle_down")
+        xp.AddAbles(altitude=True, position=True, speed=True)
 
-        xp.AddDataReader("sim/flightmodel/position/true_airspeed", freq=1) 
-        xp.AddDataReader("sim/flightmodel/position/latitude")
-        xp.AddDataReader("sim/flightmodel/position/longitude")
-        xp.AddDataReader("sim/flightmodel/position/elevation")
-        xp.AddDataReader("sim/flightmodel/position/local_x")
-        xp.AddDataReader("sim/flightmodel/position/local_y")
 
-        # xp.AddDataReader("sim/cockpit2/gauges/indicators/altitude_ft_copilot")
-        # xp.AddDataReader("sim/cockpit2/gauges/indicators/altitude_ft_pilot")
-        # xp.AddDataReader("sim/cockpit2/gauges/indicators/altitude_ft_stby")
-        
+        # === Writer
+        # xp.AddDataWriter("sim/engines/throttle_down")
+
+        # === Writer end
 
         running = True
         while running:
+            # Check for 'esc' press
             if msvcrt.kbhit() and msvcrt.getch()[0] == 27:
                 running = False
                 break
             try:
                 values = xp.GetValues()
                 print(values)
+                print()
             except XPlaneTimeout:
                 print("XPlane Timeout")
 
