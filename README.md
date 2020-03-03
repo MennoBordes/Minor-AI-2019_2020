@@ -22,5 +22,10 @@ Folder > xplane
 
 File > xplane_2.py
 
+Check the required dependencies which are at the top of the file, before running with your prefered IDE.
+
+
+In order to stop running, simply press 'esc' while the terminal is selected.
+
 # 3. Additional info
 In the X-plane_instuctions folder are a couple of files that will be useful for reading/writing data from/to X-Plane
