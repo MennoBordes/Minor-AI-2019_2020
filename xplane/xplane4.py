@@ -1,3 +1,7 @@
-import xpc
+import XPlaneConnect.xpc as xpc
 
-xpc.XPlaneConnect(xpHost = 'localhost', xpPort = 49009, port = 0, timeout = 100)
+with xpc.XPlaneConnect() as client:
+    dref = "sim/cockpit/switches/gear_handle_status"
+    value = client.getDREF(dref)
+    print("The gear handle status is " + str(value[0]))
+    client.pauseSim(True)
