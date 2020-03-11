@@ -74,37 +74,14 @@ class XPlaneUdp:
         cmd = b"RREF\x00"
         string = dataref.encode()
         message = struct.pack("<5sii400s", cmd, freq, idx, string)
-        assert(len(message) == 413)
-        self.socket.sendto(message, (self.BeaconData["IP"], self.UDP_PORT))
-
-    def AddDataWriter(self, dataWrite, freq=None):      # WORK IN PROGRESS
-        idx = -9999
-
-        if freq == None:
-            freq = self.defaultFreq
-
-        if dataWrite in self.dataWrites.values():
-            idx = list(self.dataWrites.keys())[
-                list(self.dataWrites.values()).index(dataWrite)]
-            if freq == 0:
-                if dataWrite in self.xplaneValues.keys():
-                    del self.xplaneValues[dataWrite]
-                del self.dataWrites[idx]
-        else:
-            idx = self.datawriteIdx
-            self.dataWrites[self.datawriteIdx] = dataWrite
-            self.datawriteIdx += 1
-
-        cmd = b"RREF\x00"
-        string = dataWrite.encode()
-        message = struct.pack("<5sii400s", cmd, freq, idx, string)
+        print("read-message",message)
         assert(len(message) == 413)
         self.socket.sendto(message, (self.BeaconData["IP"], self.UDP_PORT))
 
     def GetValues(self):
         try:
             # Receive packet
-            data, addr = self.socket.recvfrom(
+            data, _ = self.socket.recvfrom(
                 1024)  # buffer size is 1024 bytes
             # Decode Packet
             retvalues = {}
@@ -132,6 +109,30 @@ class XPlaneUdp:
         except:
             raise XPlaneTimeout
         return self.xplaneValues
+
+    def AddDataWriter(self, dataWrite, freq=None):      # WORK IN PROGRESS
+        idx = -9999
+
+        if freq == None:
+            freq = self.defaultFreq
+
+        if dataWrite in self.dataWrites.values():
+            idx = list(self.dataWrites.keys())[
+                list(self.dataWrites.values()).index(dataWrite)]
+            if freq == 0:
+                if dataWrite in self.xplaneValues.keys():
+                    del self.xplaneValues[dataWrite]
+                del self.dataWrites[idx]
+        else:
+            idx = self.datawriteIdx
+            self.dataWrites[self.datawriteIdx] = dataWrite
+            self.datawriteIdx += 1
+
+        cmd = b"DREF\x00"
+        string = dataWrite.encode()
+        message = struct.pack("<5sii400s", cmd, freq, idx, string)
+        assert(len(message) == 413)
+        self.socket.sendto(message, (self.BeaconData["IP"], self.UDP_PORT))
 
     def WriteValues(self):
         try:
@@ -247,18 +248,15 @@ class XPlaneUdp:
         # Testing
         
         # self.AddDataReader("sim/world/winch/winch_speed_knots")
-        self.AddDataReader("sim/weather/wind_altitude_msl_m[0]")
-        self.AddDataReader("sim/weather/wind_direction_degt[0]")
-        self.AddDataReader("sim/weather/wind_speed_kt[0]")
-        self.AddDataReader("sim/weather/wind_altitude_msl_m[1]")
-        self.AddDataReader("sim/weather/wind_direction_degt[1]")
-        self.AddDataReader("sim/weather/wind_speed_kt[1]")
-        self.AddDataReader("sim/weather/wind_altitude_msl_m[2]")
-        self.AddDataReader("sim/weather/wind_direction_degt[2]")
-        self.AddDataReader("sim/weather/wind_speed_kt[2]")
-
-
-
+        # self.AddDataReader("sim/weather/wind_altitude_msl_m[0]")
+        # self.AddDataReader("sim/weather/wind_direction_degt[0]")
+        # self.AddDataReader("sim/weather/wind_speed_kt[0]")
+        # self.AddDataReader("sim/weather/wind_altitude_msl_m[1]")
+        # self.AddDataReader("sim/weather/wind_direction_degt[1]")
+        # self.AddDataReader("sim/weather/wind_speed_kt[1]")
+        # self.AddDataReader("sim/weather/wind_altitude_msl_m[2]")
+        # self.AddDataReader("sim/weather/wind_direction_degt[2]")
+        # self.AddDataReader("sim/weather/wind_speed_kt[2]")
 
 # Example how to use:
 # You need a running xplane in your network.
@@ -271,13 +269,11 @@ if __name__ == '__main__':
         print(beacon)
         print()
 
+        # Load reader
         xp.AddAbles(altitude=True, position=True, speed=True)
 
-
-        # === Writer
-        # xp.AddDataWriter("sim/engines/throttle_down")
-
-        # === Writer end
+        # Load writer
+        # xp.AddDataWriter("sim/engines/throttle_up")
 
         running = True
         while running:
@@ -286,7 +282,9 @@ if __name__ == '__main__':
                 running = False
                 break
             try:
+                # print("try")
                 values = xp.GetValues()
+                # xp.WriteValues()
                 print(values)
                 print()
             except XPlaneTimeout:
