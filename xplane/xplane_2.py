@@ -273,11 +273,8 @@ if __name__ == '__main__':
 
         xp.AddAbles(altitude=True, position=True, speed=True)
 
+        xp.AddDataWriter("sim/cockpit/switches/ENGN_thro")
 
-        # === Writer
-        # xp.AddDataWriter("sim/engines/throttle_down")
-
-        # === Writer end
 
         running = True
         while running:
