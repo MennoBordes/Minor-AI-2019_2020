@@ -1,0 +1,184 @@
+Enkel uitlezen, niet door een programma aan laten passen
+
+Bijvoorbeeld: Positie landingsgestel, vermogen van motor, resterende brandstof
+
+
+sim/aircraft/engine/acf_throtmax_FWD	float	y
+sim/aircraft/engine/acf_throtmax_REV	float	y
+sim/aircraft/engine/acf_RSC_mingov_eng	float	y	rad/sec	Minimum engine speed with governor on radians/second
+sim/aircraft/engine/acf_RSC_idlespeed_eng	float	y	rad/sec	Engine idle speed radians/second.
+sim/aircraft/engine/acf_RSC_redline_eng	float	y	rad/sec	Max engine speed radians/second.
+sim/aircraft/engine/acf_critalt	float	y	meters	Critical altitude for props
+sim/aircraft/engine/acf_mpmax	float	y
+sim/aircraft/engine/acf_spooltime_jet	float	y	seconds	This is the delay in increasing the throttle for jet engines - it is the number of seconds to actuate a full advance.
+sim/aircraft/engine/acf_spooltime_prop	float	y	seconds	This is the delay in increasing the throttle for prop/turboprop engines - it is the number of seconds to actuate a full advance.
+sim/aircraft/engine/acf_spooltime_turbine	float	y	seconds	This is the number of seconds it takes for a free turbine to spin up from idle to full RPM.
+sim/aircraft/engine/acf_fuel_intro_time_prop	float	y	seconds	This is the number of seconds it takes for full idle fuel flow to be reached on engine start, for propeller engines
+sim/aircraft/engine/fuel_intro_time_jet	float	y	seconds	This is the number of seconds it takes for full idle fuel flow to be reached on engine start, for jet engines
+sim/aircraft/engine/acf_max_ITT	float	y	???	Max internal turbine temperature the plane can have before engine failure.
+sim/aircraft/engine/acf_max_EGT	float	y	???	Max exhaust gas temperature the plane can have before engine failure.
+sim/aircraft/engine/acf_max_CHT	float	y	???	MAx cylinder head temperature the plane can have before engine failure.
+sim/aircraft/engine/acf_max_OILP	float	y	???	Max Oil Pressure the plane can have before engine failure.
+sim/aircraft/engine/acf_max_OILT	float	y	???	Max Oil Temperature the plane can have before engine failure.
+sim/aircraft/engine/acf_oilT_is_C	int	n	boolean	Oil temperature dataref reads in Celsius
+sim/aircraft/engine/acf_ITT_is_C	int	n	boolean	Inter-turbine temperature dataref reads in Celsius
+sim/aircraft/engine/acf_EGT_is_C	int	n	boolean	Exhaust gas temperature dataref reads in Celsius
+sim/aircraft/engine/acf_CHT_is_C	int	n	boolean	Cylinder head temperature dataref reads in Celsius
+sim/aircraft/engine/acf_max_FUELP	float	y	???	Max Fuel Pressure the plane can have before engine failure.
+sim/aircraft/engine/acf_starter_torque_ratio	float	y	Ratio	This is the ratio of the engine's maximum torque that the starter applies at its design RPM.
+sim/aircraft/engine/acf_starter_max_rpm_ratio	float	y	Ratio	This is the ratio of the engine's max RPM that the starter can spin the engine up to before it loses torque.
+sim/aircraft/engine/boost_ratio	float	y	ratio	Boost Amount
+sim/aircraft/engine/acf_APU_cooldown_time	float	y	seconds	How fast the APU EGT cools down after use - influences how long the APU runs in cool down mode before it is shut down
+sim/aircraft/engine/acf_APU_spoolup_time	float	y	seconds	How long the APU takes to spool up to 100 percent
+sim/aircraft/engine/acf_APU_spooldn_time	float	y	seconds	How long the APU takes to spool down to 10 percent
+sim/aircraft/limits/green_lo_MP	float	n	inhg	Low value of the green arc for the manifold pressure instrument
+sim/aircraft/limits/green_hi_MP	float	n	inhg	High value of the green arc for the manifold pressure instrument
+sim/aircraft/limits/yellow_lo_MP	float	n	inhg	Low value of the yellow arc for the manifold pressure instrument
+sim/aircraft/limits/yellow_hi_MP	float	n	inhg	High value of the yellow arc for the manifold pressure instrument
+sim/aircraft/limits/red_lo_MP	float	n	inhg	Low value of the red arc for the manifold pressure instrument
+sim/aircraft/limits/red_hi_MP	float	n	inhg	High value of the red arc for the manifold pressure instrument
+sim/aircraft/limits/green_lo_EPR	float	n	ratio	Low value of the green arc for the engine pressure ratio instrument
+sim/aircraft/limits/green_hi_EPR	float	n	ratio	High value of the green arc for the engine pressure ratio instrument
+sim/aircraft/limits/yellow_lo_EPR	float	n	ratio	Low value of the yellow arc for the engine pressure ratio instrument
+sim/aircraft/limits/yellow_hi_EPR	float	n	ratio	High value of the yellow arc for the engine pressure ratio instrument
+sim/aircraft/limits/red_lo_EPR	float	n	ratio	Low value of the red arc for the engine pressure ratio instrument
+sim/aircraft/limits/red_hi_EPR	float	n	ratio	High value of the red arc for the engine pressure ratio instrument
+sim/aircraft/limits/green_lo_TRQ	float	n	ft-lbs	Low value of the green arc for the torque instrument
+sim/aircraft/limits/green_hi_TRQ	float	n	ft-lbs	High value of the green arc for the torque instrument
+sim/aircraft/limits/yellow_lo_TRQ	float	n	ft-lbs	Low value of the yellow arc for the torque instrument
+sim/aircraft/limits/yellow_hi_TRQ	float	n	ft-lbs	High value of the yellow arc for the torque instrument
+sim/aircraft/limits/red_lo_TRQ	float	n	ft-lbs	Low value of the red arc for the torque instrument
+sim/aircraft/limits/red_hi_TRQ	float	n	ft-lbs	High value of the red arc for the torque instrument
+sim/aircraft/limits/green_lo_FF	float	n	gal/hr_or_lb/hr	Low value of the green arc for the fuel flow instrument
+sim/aircraft/limits/green_hi_FF	float	n	gal/hr_or_lb/hr	High value of the green arc for the fuel flow instrument
+sim/aircraft/limits/yellow_lo_FF	float	n	gal/hr_or_lb/hr	Low value of the yellow arc for the fuel flow instrument
+sim/aircraft/limits/yellow_hi_FF	float	n	gal/hr_or_lb/hr	High value of the yellow arc for the fuel flow instrument
+sim/aircraft/limits/red_lo_FF	float	n	gal/hr_or_lb/hr	Low value of the red arc for the fuel flow instrument
+sim/aircraft/limits/red_hi_FF	float	n	gal/hr_or_lb/hr	High value of the red arc for the fuel flow instrument
+sim/aircraft/limits/green_lo_ITT	float	n	degC	Low value of the green arc for the interturbine temperature instrument
+sim/aircraft/limits/green_hi_ITT	float	n	degC	High value of the green arc for the interturbine temperature instrument
+sim/aircraft/limits/yellow_lo_ITT	float	n	degC	Low value of the yellow arc for the interturbine temperature instrument
+sim/aircraft/limits/yellow_hi_ITT	float	n	degC	High value of the yellow arc for the interturbine temperature instrument
+sim/aircraft/limits/red_lo_ITT	float	n	degC	Low value of the red arc for the interturbine temperature instrument
+sim/aircraft/limits/red_hi_ITT	float	n	degC	High value of the red arc for the interturbine temperature instrument
+sim/aircraft/limits/green_lo_EGT	float	n	degC	Low value of the green arc for the exhaust gas temperature instrument
+sim/aircraft/limits/green_hi_EGT	float	n	degC	High value of the green arc for the exhaust gas temperature instrument
+sim/aircraft/limits/yellow_lo_EGT	float	n	degC	Low value of the yellow arc for the exhaust gas temperature instrument
+sim/aircraft/limits/yellow_hi_EGT	float	n	degC	High value of the yellow arc for the exhaust gas temperature instrument
+sim/aircraft/limits/red_lo_EGT	float	n	degC	Low value of the red arc for the exhaust gas temperature instrument
+sim/aircraft/limits/red_hi_EGT	float	n	degC	High value of the red arc for the exhaust gas temperature instrument
+sim/aircraft/limits/green_lo_CHT	float	n	degC	Low value of the green arc for the cylinder-head temperature instrument
+sim/aircraft/limits/green_hi_CHT	float	n	degC	High value of the green arc for the cylinder-head temperature instrument
+sim/aircraft/limits/yellow_lo_CHT	float	n	degC	Low value of the yellow arc for the cylinder-head temperature instrument
+sim/aircraft/limits/yellow_hi_CHT	float	n	degC	High value of the yellow arc for the cylinder-head temperature instrument
+sim/aircraft/limits/red_lo_CHT	float	n	degC	Low value of the red arc for the cylinder-head temperature instrument
+sim/aircraft/limits/red_hi_CHT	float	n	degC	High value of the red arc for the cylinder-head temperature instrument
+sim/aircraft/limits/green_lo_oilT	float	n	degC	Low value of the green arc for the oil temperature instrument
+sim/aircraft/limits/green_hi_oilT	float	n	degC	High value of the green arc for the oil temperature instrument
+sim/aircraft/limits/yellow_lo_oilT	float	n	degC	Low value of the yellow arc for the oil temperature instrument
+sim/aircraft/limits/yellow_hi_oilT	float	n	degC	High value of the yellow arc for the oil temperature instrument
+sim/aircraft/limits/red_lo_oilT	float	n	degC	Low value of the red arc for the oil temperature instrument
+sim/aircraft/limits/red_hi_oilT	float	n	degC	High value of the red arc for the oil temperature instrument
+sim/aircraft/limits/green_lo_oilP	float	n	PSI	Low value of the green arc for the oil pressure instrument
+sim/aircraft/limits/green_hi_oilP	float	n	PSI	High value of the green arc for the oil pressure instrument
+sim/aircraft/limits/yellow_lo_oilP	float	n	PSI	Low value of the yellow arc for the oil pressure instrument
+sim/aircraft/limits/yellow_hi_oilP	float	n	PSI	High value of the yellow arc for the oil pressure instrument
+sim/aircraft/limits/red_lo_oilP	float	n	PSI	Low value of the red arc for the oil pressure instrument
+sim/aircraft/limits/red_hi_oilP	float	n	PSI	High value of the red arc for the oil pressure instrument
+sim/aircraft/limits/green_lo_fuelP	float	n	PSI	Low value of the green arc for the fuel pressure instrument
+sim/aircraft/limits/green_hi_fuelP	float	n	PSI	High value of the green arc for the fuel pressure instrument
+sim/aircraft/limits/yellow_lo_fuelP	float	n	PSI	Low value of the yellow arc for the fuel pressure instrument
+sim/aircraft/limits/yellow_hi_fuelP	float	n	PSI	High value of the yellow arc for the fuel pressure instrument
+sim/aircraft/limits/red_lo_fuelP	float	n	PSI	Low value of the red arc for the fuel pressure instrument
+sim/aircraft/limits/red_hi_fuelP	float	n	PSI	High value of the red arc for the fuel pressure instrument
+sim/aircraft/limits/green_lo_gen_amp	float	n	amps	Low value of the green arc for the generator amperage instrument
+sim/aircraft/limits/green_hi_gen_amp	float	n	amps	High value of the green arc for the generator amperage instrument
+sim/aircraft/limits/yellow_lo_gen_amp	float	n	amps	Low value of the yellow arc for the generator amperage instrument
+sim/aircraft/limits/yellow_hi_gen_amp	float	n	amps	High value of the yellow arc for the generator amperage instrument
+sim/aircraft/limits/red_lo_gen_amp	float	n	amps	Low value of the red arc for the generator amperage instrument
+sim/aircraft/limits/red_hi_gen_amp	float	n	amps	High value of the red arc for the generator amperage instrument
+sim/aircraft/limits/green_lo_bat_amp	float	n	amps	Low value of the green arc for the battery amperage instrument
+sim/aircraft/limits/green_hi_bat_amp	float	n	amps	High value of the green arc for the battery amperage instrument
+sim/aircraft/limits/yellow_lo_bat_amp	float	n	amps	Low value of the yellow arc for the battery amperage instrument
+sim/aircraft/limits/yellow_hi_bat_amp	float	n	amps	High value of the yellow arc for the battery amperage instrument
+sim/aircraft/limits/red_lo_bat_amp	float	n	amps	Low value of the red arc for the battery amperage instrument
+sim/aircraft/limits/red_hi_bat_amp	float	n	amps	High value of the red arc for the battery amperage instrument
+sim/aircraft/limits/max_bat_amp	float	n	amps	Battery amp when the non-standby batteries are fully charged.
+sim/aircraft/limits/green_lo_bat_volt	float	n	volts	Low value of the green arc for the battery voltage instrument
+sim/aircraft/limits/green_hi_bat_volt	float	n	volts	High value of the green arc for the battery voltage instrument
+sim/aircraft/limits/yellow_lo_bat_volt	float	n	volts	Low value of the yellow arc for the battery voltage instrument
+sim/aircraft/limits/yellow_hi_bat_volt	float	n	volts	High value of the yellow arc for the battery voltage instrument
+sim/aircraft/limits/red_lo_bat_volt	float	n	volts	Low value of the red arc for the battery voltage instrument
+sim/aircraft/limits/red_hi_bat_volt	float	n	volts	High value of the red arc for the battery voltage instrument
+sim/aircraft/limits/max_bat_volt_standard	float	n	volts	This is the voltage when the standard (non-standby) batteries are fully charged.
+sim/aircraft/limits/green_lo_vac	float	n	psi	Low value of the green arc for the vacuum pressure instrument
+sim/aircraft/limits/green_hi_vac	float	n	psi	High value of the green arc for the vacuum pressure instrument
+sim/aircraft/limits/yellow_lo_vac	float	n	psi	Low value of the yellow arc for the vacuum pressure instrument
+sim/aircraft/limits/yellow_hi_vac	float	n	psi	High value of the yellow arc for the vacuum pressure instrument
+sim/aircraft/limits/red_lo_vac	float	n	psi	Low value of the red arc for the vacuum pressure instrument
+sim/aircraft/limits/red_hi_vac	float	n	psi	High value of the red arc for the vacuum pressure instrument
+sim/aircraft/limits/max_vac	float	n	psi	Vacuum pressure put out when the engine is running at the bottom of red line (max vacuum).
+sim/aircraft/limits/green_lo_N1	float	n	percent	Low value of the green arc for the N1 instrument
+sim/aircraft/limits/green_hi_N1	float	n	percent	High value of the green arc for the N1 instrument
+sim/aircraft/limits/yellow_lo_N1	float	n	percent	Low value of the yellow arc for the N1 instrument
+sim/aircraft/limits/yellow_hi_N1	float	n	percent	High value of the yellow arc for the N1 instrument
+sim/aircraft/limits/red_lo_N1	float	n	percent	Low value of the red arc for the N1 instrument
+sim/aircraft/limits/red_hi_N1	float	n	percent	High value of the red arc for the N1 instrument
+sim/aircraft/limits/green_lo_N2	float	n	percent	Low value of the green arc for the N2 instrument
+sim/aircraft/limits/green_hi_N2	float	n	percent	High value of the green arc for the N2 instrument
+sim/aircraft/limits/yellow_lo_N2	float	n	percent	Low value of the yellow arc for the N2 instrument
+sim/aircraft/limits/yellow_hi_N2	float	n	percent	High value of the yellow arc for the N2 instrument
+sim/aircraft/limits/red_lo_N2	float	n	percent	Low value of the red arc for the N2 instrument
+sim/aircraft/limits/red_hi_N2	float	n	percent	High value of the red arc for the N2 instrument
+sim/aircraft/prop/acf_en_type	int[8]	n	enum	engine type - read only in v11, but you should NEVER EVER write this in v10 or earlier.  0=recip carb, 1=recip injected, 2=free turbine, 3=electric, 4=lo bypass jet, 5=hi bypass jet, 6=rocket, 7=tip rockets, 8=fixed turbine
+sim/aircraft/prop/acf_revthrust_eq	int	y	???	better organization to do it this way, NOTE : Used to be i8 in version 6
+sim/aircraft/prop/acf_prop_type	int[8]	y	???	prop type
+sim/aircraft/prop/acf_prop_gear_rat	float[8]	y	???	prop to engine or common power source
+sim/aircraft/prop/acf_prop_dir	float[8]	n	???	1.0=CW, -1.0=CCW, float so we can multiply effects by floats - made NOT writable in 11.10.  YOU SHOULD NEVER WRITE THIS IN ANY VERSION OF X-PLANE.
+sim/aircraft/prop/acf_reversed_pitch	float	y	???	in reverse
+sim/aircraft/prop/acf_part_eq	int[95]	n	???	[PART]
+sim/aircraft/parts/acf_Rafl0	byte[2920]	y	string[40]	array of airfoil names, per part
+sim/aircraft/parts/acf_Rafl1	byte[2920]	y	string[40]	file, not path
+sim/aircraft/parts/acf_Tafl0	byte[2920]	y	string[40]	file, not path
+sim/aircraft/parts/acf_Tafl1	byte[2920]	y	string[40]	file, not path
+sim/aircraft/parts/acf_gear_type	int[10]	y
+sim/aircraft/parts/acf_gear_latE	float[10]	y
+sim/aircraft/parts/acf_gear_lonE	float[10]	y
+sim/aircraft/parts/acf_gear_axiE	float[10]	y	???	extended
+sim/aircraft/parts/acf_gear_latR	float[10]	y
+sim/aircraft/parts/acf_gear_lonR	float[10]	y
+sim/aircraft/parts/acf_gear_axiR	float[10]	y	???	retracted
+sim/aircraft/parts/acf_gear_latN	float[10]	y
+sim/aircraft/parts/acf_gear_lonN	float[10]	y
+sim/aircraft/parts/acf_gear_axiN	float[10]	y	???	now
+sim/aircraft/parts/acf_gear_leglen	float[10]	y	???	gear param
+sim/aircraft/parts/acf_gear_tirrad	float[10]	y	???	gear param
+sim/aircraft/parts/acf_gearcon	float[10]	y	???	gear param
+sim/aircraft/parts/acf_geardmp	float[10]	y	???	gear param
+sim/aircraft/parts/acf_gearstatdef	float[10]	y	???	static deflection... the gear TIRE LOCATION IS OFFSET DOWN BY THIS MUCH IN X-PLANE since people ALWAYS enter gear location UNDER STATIC DEFLECTION!
+sim/aircraft/parts/acf_gear_deploy	float[10]	y	???	landing gear deployment, 0.0->1.0
+sim/aircraft/parts/acf_gear_xnodef	float[10]	y	meters	x location of the Nth gear's attach point relative to the CG, airplane coordinates.  This does not change as gear is raised.
+sim/aircraft/parts/acf_gear_ynodef	float[10]	y	meters	y location of the Nth gear's attach point relative to the CG, airplane coordinates.  This does not change as gear is raised.
+sim/aircraft/parts/acf_gear_znodef	float[10]	y	meters	z location of the Nth gear's attach point relative to the CG, airplane coordinates.  This does not change as gear is raised.
+sim/aircraft/bodies/acf_fuse_cd	float	y	???	cd for fuselage
+sim/aircraft/bodies/acf_fuse_cd_array	float[95]	y	???	[PART] cd for all parts
+sim/aircraft/controls/acf_RSC_mingov_prp	float	y	rad/sec	Minimum prop speed with governor on, radians/second
+sim/aircraft/controls/acf_RSC_idlespeed_prp	float	y	rad/sec	Prop idle speed radians/second
+sim/aircraft/controls/acf_RSC_redline_prp	float	y	rad/sec	Max prop speed radians/second
+sim/aircraft/controls/acf_hstb_trim_up	float	y	degrees	This is the maximum degrees deflection up for a horizontal stabilizer that moves during trim
+sim/aircraft/controls/acf_hstb_trim_dn	float	y	degrees	This is the maximum degrees deflection down for a horizontal stabilizer that moves during trim
+sim/aircraft/controls/acf_elev_trim_speedrat	float	y	ratio	This is the speed of trim time, expressed as a ratio, where 1.0 means it takes 20 seconds to fully move trim from one extreme to the other.  2.0 means trim is twice as fast.
+sim/aircraft/controls/acf_ailn_trim_speedrat	float	y	ratio	This is the speed of trim time, expressed as a ratio, where 1.0 means it takes 20 seconds to fully move trim from one extreme to the other.  2.0 means trim is twice as fast.
+sim/aircraft/controls/acf_rudd_trim_speedrat	float	y	ratio	This is the speed of trim time, expressed as a ratio, where 1.0 means it takes 20 seconds to fully move trim from one extreme to the other.  2.0 means trim is twice as fast.
+sim/aircraft/controls/acf_elev_def_time	float	y	secs	Enter 0.0 to be able to deflect the controls as fast as the pilot can move the stick or the art stab system can command a deflection. If the plane has a hydraulic system and a max rate of control deflection, though, enter how long it takes to go from center to fully-deflected.
+sim/aircraft/controls/acf_ailn_def_time	float	y	secs	Enter 0.0 to be able to deflect the controls as fast as the pilot can move the stick or the art stab system can command a deflection. If the plane has a hydraulic system and a max rate of control deflection, though, enter how long it takes to go from center to fully-deflected.
+sim/aircraft/controls/acf_rudd_def_time	float	y	secs	Enter 0.0 to be able to deflect the controls as fast as the pilot can move the stick or the art stab system can command a deflection. If the plane has a hydraulic system and a max rate of control deflection, though, enter how long it takes to go from center to fully-deflected.
+sim/aircraft/controls/acf_elev_trim_time	float	y	secs	This is the total time taken for the elevator trim to go from one extreme to the other.
+sim/aircraft/controls/acf_ailn_trim_time	float	y	secs	This is the total time taken for the aileron trim to go from one extreme to the other.
+sim/aircraft/controls/acf_rudd_trim_time	float	y	secs	This is the total time taken for the rudder trim to go from one extreme to the other.
+sim/aircraft/controls/acf_speedbrake_ext_time	float	y	secs	Speedbrake time to extend.
+sim/aircraft/controls/acf_speedbrake_ret_time	float	y	secs	Speedbrake time to retract.
+sim/aircraft/gear/acf_gear_retract	int	y	bool	Are any of the gear on this plane retractable.  We strongly recommend you DO NOT write to this dataref.
+sim/aircraft/weight/acf_m_fuel_tot	float	y	lbs	Weight of total fuel - appears to be in lbs.
+
+Geëindigd op 366

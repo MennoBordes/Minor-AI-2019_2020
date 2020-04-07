@@ -1,0 +1,20 @@
+Kan zowel uitgelezen worden als aangepast worden
+
+Bijvoorbeeld: Schakelaars, Flaps, Throttle, positie van de stuurknuppel
+
+
+sim/aircraft/engine/acf_prop_fail_mode	int	y	enum	Where the prop pitch angle goes when the governor loses oil pressure: 0=low pitch, 1=high pitch, 2=feather, 3=start lock
+sim/aircraft/prop/acf_num_blades	float[8]	y	???	float so we can multiply effects by floats
+sim/aircraft/controls/acf_takeoff_trim	float	y	[-1..1]	This is the trim position for takeoff expressed as a ratio, 1 = max up trim, -1 = max down trim.
+sim/aircraft/controls/acf_min_trim_elev	float	y	[0..1]	Maximum nose-down trim, expressed as a ratio of maximum nose-down elevator deflection
+sim/aircraft/controls/acf_max_trim_elev	float	y	[0..1]	Maximum nose-up trim, expressed as a ratio of maximum nose-up elevator deflection
+sim/aircraft/controls/acf_elev_tab	float	y	[-1..1]	This is the amount of elevator deflection (as a ratio of max) induced by the aerodynamic effect of static trim tabs.
+sim/aircraft/controls/acf_min_trim_ailn	float	y	[0..1]	Maximum aileron downward trim, expressed as a ratio of maximum aileron downward travel
+sim/aircraft/controls/acf_max_trim_ailn	float	y	[0..1]	Maximum aileron upward trim, expressed as a ratio of maximum aileron upward travel
+sim/aircraft/controls/acf_ailn_tab	float	y	[-1..1]	This is the amount of aileron deflection (as a ratio of max) induced by the aerodynamic effect of static trim tabs.
+sim/aircraft/controls/acf_min_trim_rudd	float	y	[0..1]	Maximum rudder left trim, expressed as a ratio of maximum rudder left travel
+sim/aircraft/controls/acf_max_trim_rudd	float	y	[0..1]	Maximum rudder right trim, expressed as a ratio of maximum rudder right travel
+sim/aircraft/controls/acf_rudd_tab	float	y	[0..1]	This is the amount of rudder deflection (as a ratio of max) induced by the aerodynamic effect of static trim tabs.
+sim/aircraft/weight/acf_m_jettison	float	y
+
+Geëindigd op 366
