@@ -86,5 +86,75 @@ def ex():
         print("End of Python client example")
 
 
+def ex2():
+    print("X-Plane Connect example script")
+    print("Setting up simulation")
+    with xpc.XPlaneConnect() as client:
+        # Verify connection
+        try:
+            # If X-Plane does not respond to the request, a timeout error
+            # will be raised.
+            client.getDREF("sim/test/test_float")
+        except:
+            print("Error establishing connection to X-Plane.")
+            print("Exiting...")
+            return
+
+        # Get dataref value
+        print('Getting dref value')
+        _dref = "sim/aircraft/overflow/acf_stall_warn_alpha"
+
+        # client.sendDREF(gear_dref, 0)
+
+        # Make sure gear was stowed successfully
+        _status = client.getDREF(_dref)
+        print("dref value = ", _status)
+        if isinstance(_status, list):
+            print('value consists of the following entries: ')
+            for x in _status:
+                print('value ' + x + ' = ', _status[x])
+        # if _status[0] == 0:
+        #     print("Gear stowed")
+        # else:
+        #     print("Error stowing gear")
+
+        print("End of Python client example")
+
+
+def ex3():
+    with xpc.XPlaneConnect() as client:
+        # Verify connection
+        try:
+            # If X-Plane does not respond to the request, a timeout error
+            # will be raised.
+            client.getDREF("sim/test/test_float")
+        except:
+            print("Error establishing connection to X-Plane.")
+            print("Exiting...")
+            return
+
+        print("Reading file and passing datarefs to XPlane")
+        f = open("../X-plane_instructions/DataRefs.txt", "r")
+        index = 0
+        for x in f:
+            index = index + 1
+            first = x.split(None, 1)
+            # print("test ", first)
+            if isinstance(first, list) and len(first) > 0:
+                # print(first[0], "**IS WITH**", first[1])
+
+                # Get dataref value
+                # print('Getting dref value for ', first[0])
+                _dref = first[0]
+                _status = client.getDREF(_dref)
+                print(index, first[0], "value = ", _status)
+
+            # break
+            sleep(0.001)
+        f.close()
+
+
 if __name__ == "__main__":
-    ex()
+    # ex()
+    # ex2()
+    ex3()
