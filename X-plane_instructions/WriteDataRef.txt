@@ -16,5 +16,47 @@ sim/aircraft/controls/acf_min_trim_rudd	float	y	[0..1]	Maximum rudder left trim,
 sim/aircraft/controls/acf_max_trim_rudd	float	y	[0..1]	Maximum rudder right trim, expressed as a ratio of maximum rudder right travel
 sim/aircraft/controls/acf_rudd_tab	float	y	[0..1]	This is the amount of rudder deflection (as a ratio of max) induced by the aerodynamic effect of static trim tabs.
 sim/aircraft/weight/acf_m_jettison	float	y
+sim/cockpit2/switches/clutch_ratio	float	y	ratio	Current clutch ratio, 0.0 is off, 1.0 is on - follows clutch engage with some lag.
+sim/cockpit2/switches/clutch_engage	int	y	boolean	Switch, 0 or 1 - engage/disengage rotor clutch
+sim/cockpit2/switches/rotor_brake	int	y	boolean	Switch, 0 or 1 - turns on the rotor brake.
+sim/cockpit2/switches/artificial_stability_on	int	y	boolean	Switch, 0 or 1.
+sim/cockpit2/switches/artificial_stability_pitch_on	int	y	boolean	Switch, 0 or 1.
+sim/cockpit2/switches/artificial_stability_roll_on	int	y	boolean	Switch, 0 or 1.
+sim/cockpit2/switches/dump_fuel	int	y	boolean	Switch, 0 or 1.
+sim/cockpit2/switches/puffers_on	int	y	boolean	Switch, 0 or 1.
+sim/cockpit2/switches/prop_sync_on	int	y	boolean	Switch, 0 or 1.
+sim/cockpit2/switches/jet_sync_mode	int	y	enum	Switch, 0 or 1. fan=0, off=1, turbine=2#WHAT ARE THESE?
+sim/cockpit2/switches/electric_hydraulic_pump_on	int	y	boolean	Switch, 0 or 1.		electric hydro-pressure pump
+sim/cockpit2/switches/ram_air_turbine_on	int	y	boolean	Switch, 0 or 1.		ram air turbine (the rat) when total failure
+sim/cockpit2/switches/yaw_damper_on	int	y	boolean	Switch, 0 or 1.
+sim/cockpit2/ice/ice_detect_on	int	y	boolean	De-ice switch, 0 or 1.  Ice-detection: Turn this switch on to enable ice-detection... if the system detects ice, it will light up the ICE annunciator.
+sim/cockpit2/ice/ice_prop_tks_on_per_engine	int[8]	y	enum	De-ice switch, 0, 1, or 2.  De-ice - prop TKS. This switch turns on de-icing of the propeller(s) with TKS fluid to keep ice from building up on your prop. 0 = Off, 1 = Norm, 2 = High. Per engine
+sim/cockpit2/ice/anti_ice_engine_air	float[8]	y	ratio	De-Ice ratio.  (Description needed)
+sim/cockpit2/ice/anti_ice_engine_air_b	float[8]	y	ratio	De-Ice ratio.  (Description needed)
+sim/cockpit2/ice/ice_all_on	int	y	boolean	De-ice switch, 0 or 1.	De-ice - all systems. This is the master switch for the de-icing systems.
+sim/cockpit2/ice/ice_inlet_heat_on	int	y	boolean	De-ice switch, 0 or 1.  De-ice - inlet heat. This switch turns on de-icing heat in the engine air inlet keep ice from choking your engine. Engine 1 only
+sim/cockpit2/ice/ice_prop_heat_on	int	y	boolean	De-ice switch, 0 or 1.  De-ice - prop heat. This switch turns on de-icing of the propeller(s) to keep ice from building up on your prop. Engine 1 only
+sim/cockpit2/ice/ice_inlet_heat_on_per_engine	int[8]	y	boolean	De-ice switch, 0 or 1.  De-ice - inlet heat. This switch turns on de-icing heat in the engine air inlet keep ice from choking your engine.  Per engine
+sim/cockpit2/ice/ice_prop_heat_on_per_engine	int[8]	y	boolean	De-ice switch, 0 or 1.  De-ice - prop heat. This switch turns on de-icing of the propeller(s) to keep ice from building up on your prop.  Per engine
+sim/cockpit2/ice/ice_window_heat_on	int	y	boolean	De-ice switch, 0 or 1.  De-ice - windshield heat. This switch turns on windshield de-icing to keep ice from blocking your vision.
+sim/cockpit2/ice/ice_pitot_heat_on_pilot	int	y	boolean	De-ice switch, 0 or 1.  De-ice - pitot tube heat. This switch turns on de-icing heat in the pitot tube. If it freezes up your airspeed indicator and altimeter stop working. Airspeed and altitude related autopilot functions are also affected.
+sim/cockpit2/ice/ice_pitot_heat_on_copilot	int	y	boolean	De-ice switch, 0 or 1.  Pitot tube heat, co-pilot. This switch turns on de-icing heat in the co-pilot side pitot tube. If it freezes up your airspeed indicator and altimeter stop working. Airspeed and altitude related autopilot functions are also affected.
+sim/cockpit2/ice/ice_AOA_heat_on	int	y	boolean	De-ice switch, 0 or 1.  AOA sensor heat. This switch turns on de-icing heat for the AOA sensor. If it freezes up your AOA indicator stops working. AOA sensor failure will also affect the aircraft's artificial stability system if it has one.  Pilot.
+sim/cockpit2/ice/ice_AOA_heat_on_copilot	int	y	boolean	De-ice switch, 0 or 1.  AOA sensor heat. This switch turns on de-icing heat for the AOA sensor. If it freezes up your AOA indicator stops working. AOA sensor failure will also affect the aircraft's artificial stability system if it has one.  Copilot.
+sim/cockpit2/ice/ice_static_heat_on_pilot	int	y	boolean	De-ice switch, 0 or 1.  Static port heat. This switch turns on de-icing heat for the static sensor. If it freezes up your altimeter, vvi and airspeed indicator stop working. Pilot.
+sim/cockpit2/ice/ice_static_heat_on_copilot	int	y	boolean	De-ice switch, 0 or 1.  Static port heat. This switch turns on de-icing heat for the static sensor. If it freezes up your altimeter, vvi and airspeed indicator stop working. Copilot.
+sim/cockpit2/ice/ice_surfce_heat_on	int	y	boolean	De-ice switch, 0 or 1.  De-ice - electric heat. This switch engages electrically heated leading edges. (All wings)
+sim/cockpit2/ice/ice_surfce_heat_left_on	int	y	boolean	De-ice switch, 0 or 1.  De-ice - electric heat. This switch engages electrically heated leading edges. (Left wing)
+sim/cockpit2/ice/ice_surfce_heat_right_on	int	y	boolean	De-ice switch, 0 or 1.  De-ice - electric heat. This switch engages electrically heated leading edges. (Right wing)
+sim/cockpit2/ice/ice_surface_boot_on	int	y	boolean	De-ice switch, 0 or 1.  De-ice - pneumatic. This switch inflates flexible bladders on the wing leading edges to pop off accumulated ice. (All wings)
+sim/cockpit2/ice/ice_surface_boot_left_on	int	y	boolean	De-ice switch, 0 or 1.  De-ice - pneumatic. This switch inflates flexible bladders on the wing leading edges to pop off accumulated ice. (Left wing)
+sim/cockpit2/ice/ice_surface_boot_right_on	int	y	boolean	De-ice switch, 0 or 1.  De-ice - pneumatic. This switch inflates flexible bladders on the wing leading edges to pop off accumulated ice. (Right wing)
+sim/cockpit2/ice/ice_surface_hot_bleed_air_on	int	y	boolean	De-ice switch, 0 or 1.  De-ice - bleed air. This switch directs warm air from the engines into the wing leading edges to keep them free of ice. (All wings)
+sim/cockpit2/ice/ice_surface_hot_bleed_air_left_on	int	y	boolean	De-ice switch, 0 or 1.  De-ice - bleed air. This switch directs warm air from the engines into the wing leading edges to keep them free of ice. (Left wing)
+sim/cockpit2/ice/ice_surface_hot_bleed_air_right_on	int	y	boolean	De-ice switch, 0 or 1.  De-ice - bleed air. This switch directs warm air from the engines into the wing leading edges to keep them free of ice. (Right wing)
+sim/cockpit2/ice/ice_surface_tks_on	int	y	enum	De-ice switch, 0, 1, or 2.  De-ice - TKS fluid. This switch activates the pump for the weeping wing, dissipating TKS fluid on the leading edges to keep them free of ice. 0 = Off, 1 = Norm, 2 = High. (All wings)
+sim/cockpit2/ice/ice_surface_tks_left_on	int	y	enum	De-ice switch, 0, 1, or 2.  De-ice - TKS fluid. This switch activates the pump for the weeping wing, dissipating TKS fluid on the leading edges to keep them free of ice. 0 = Off, 1 = Norm, 2 = High. (Left wing)
+sim/cockpit2/ice/ice_surface_tks_right_on	int	y	enum	De-ice switch, 0, 1, or 2.  De-ice - TKS fluid. This switch activates the pump for the weeping wing, dissipating TKS fluid on the leading edges to keep them free of ice. 0 = Off, 1 = Norm, 2 = High. (Right wing)
+sim/cockpit2/ice/cowling_thermal_anti_ice_per_engine	int[8]	y	boolean	De-ice switch, 0 or 1.  De-ice - inlet heat. This switch turns on thermal anti ice of the engine cowling and inlet. This takes hot bleed air from the HP compressor.  Per engine
 
-Geëindigd op 366
+Geëindigd op 366/3675
