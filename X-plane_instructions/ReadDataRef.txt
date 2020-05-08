@@ -185,7 +185,7 @@ sim/aircraft/overflow/acf_flap_arm	float	y	???	flapping hinge arm
 sim/aircraft/overflow/acf_puffX	float	y
 sim/aircraft/overflow/acf_puffY	float	y
 sim/aircraft/overflow/acf_puffZ	float	y	???	manuevering rocket forces
-m/aircraft/overflow/acf_mass_shift	float	y	???	hang-gliders and wright gliders
+sim/aircraft/overflow/acf_mass_shift	float	y	???	hang-gliders and wright gliders
 sim/aircraft/overflow/acf_mass_shift_dx	float	y	???	hang-gliders and wright gliders
 sim/aircraft/overflow/acf_mass_shift_dz	float	y	???	hang-gliders and wright gliders
 sim/aircraft/overflow/acf_ASmaxg_hi	float	y	???	astab stuff I should have had in there the first time!
@@ -255,6 +255,7 @@ sim/aircraft/overflow/SFC_half_hi_JET	float	y	???	???
 sim/aircraft/overflow/SFC_full_hi_JET	float	y	???	???
 sim/aircraft/overflow/ff_rat_idle_JET	float	y	ratio	???
 sim/aircraft/systems/fdir_needed_to_engage_servos	int	y	boolean	If this is true, commands to engage the AP servos will be ignored if the FD is not on.
+
 sim/airfoils/afl_clB	float[56][2][2]	y	???	???
 sim/airfoils/afl_almin_array	float[56][2][2]	y	???	???
 sim/airfoils/afl_almax_array	float[56][2][2]	y	???	???
@@ -265,10 +266,12 @@ sim/airfoils/afl_clM	float[56][2][2]	y	???	???
 sim/airfoils/afl_cl	float[56][2][2][721]	y	???	???
 sim/airfoils/afl_cd	float[56][2][2][721]	y	???	???
 sim/airfoils/afl_cm	float[56][2][2][721]	y	???	???
+
 sim/atc/user_aircraft_transmitting	int	n	boolean	Is the Users/P0 aircraft currently transmitting on the radio?
 sim/atc/com1_active	int	n	boolean	Is the user's COM1 radio tuned to a freq that's actively being transmitted on by a pilot or ATC?
 sim/atc/com2_active	int	n	boolean	Is the user's COM1 radio tuned to a freq that's actively being transmitted on by a pilot or ATC?
 sim/atc/atis_enabled	int	y	boolean	Is the ATIS system enabled? If not, no ATIS text or audio will appear even when tuned to a proper frequency.
+
 sim/cockpit/autopilot/airspeed_mode	int	n	enum	Airspeed mode for the autopilot. DEPRECATED
 sim/cockpit/autopilot/heading_mode	int	n	enum	Lateral navigation mode (GPS, heading, L-Nav approach). DEPRECATED
 sim/cockpit/autopilot/altitude_mode	int	n	enum	Vertical navigation (alt hold, VVI hold, V-Nav approach). DEPRECATED
@@ -580,6 +583,7 @@ sim/cockpit/weapons/plane_target_index	int	y	???	Index of plane that is being ta
 sim/cockpit/weapons/chaff_now	int	n	count	Number of rounds left in the sum of all chaff weapons on aircraft. Missing in 11.00-11.05.  Writable in v10 and earlier.
 sim/cockpit/weapons/flare_now	int	n	count	Number of rounds left in all flare weapons on the aircraft.  Missing in 11.00-11.05.  Writable in v10 and earlier.
 sim/cockpit/weapons/wpn_sel_console	int	y	???	INDIVIDUAL weapon selected
+
 sim/flightmodel/controls/dist	float	y	meters	Distance Traveled
 sim/flightmodel/controls/lail1def	float	y	degrees	Deflection Left Aileron 1
 sim/flightmodel/controls/lail2def	float	y	degrees	Deflection Left Aileron 2
@@ -1259,6 +1263,7 @@ sim/flightmodel/weight/m_fuel2	float	y	kgs	Fuel Tank 2 Weight
 sim/flightmodel/weight/m_fuel3	float	y	kgs	Fuel Tank 3 Weight
 sim/flightmodel/weight/m_jettison	float	y	kgs	Jettison
 sim/flightmodel/weight/m_fuel_total	float	n	kgs	Fuel Total Weight
+
 sim/graphics/animation/draw_object_x	float	n	float	X position in cartesian space of currently drawn object
 sim/graphics/animation/draw_object_y	float	n	float	Y position in cartesian space of currently drawn object
 sim/graphics/animation/draw_object_z	float	n	float	Z position in cartesian space of currently drawn object
@@ -1458,7 +1463,6 @@ sim/joystick/mouse_is_joystick	int	n	boolean	Is the mouse acting as a joystick?
 sim/joystick/mouse_can_be_joystick	int	n	boolean	Can the mouse be used to fly?  False if there is any LEGIT hardware plugged in.
 
 
-PROBABLY WONT BE USING THE MULTIPLAYER PART
 sim/multiplayer/controls/yoke_pitch_ratio	float[20]	y	[-1..1]	The deflection of the axis controlling pitch.
 sim/multiplayer/controls/yoke_roll_ratio	float[20]	y	[-1..1]	The deflection of the axis controlling roll.
 sim/multiplayer/controls/yoke_heading_ratio	float[20]	y	[-1..1]	The deflection of the axis controlling yaw.
@@ -2110,6 +2114,7 @@ sim/version/sim_build_string	byte[256]	n	string	This string contains the date an
 sim/version/xplm_build_string	byte[256]	n	string	This string contains the date and time that the XPLM DLL was built.
 sim/version/xplanee_internal_version	int	n	integer	This is the internal build number - it is a unique integer that always increases and is unique with each beta.  For example, 10.51b5 might be 105105.  There is no guarantee that the build numbe (last 2 digits) are in sync with the official beta number.
 sim/version/xplane_internal_version	int	n	integer	This is the internal build number - it is a unique integer that always increases and is unique with each beta.  For example, 10.51b5 might be 105105.  There is no guarantee that the build numbe (last 2 digits) are in sync with the official beta number.
+
 sim/weapons/weapon_count	int	n	int	This is the number of weapons available via datarefs.
 sim/weapons/type	int[25]	y	enum	(V10 style!) For the geometry we scan right into the acf structure unused array-spaces.
 sim/weapons/free_flyer	int[25]	n	enum	(V10 style!) Weapon can go fly free...
@@ -2367,6 +2372,7 @@ sim/cockpit2/camera/camera_offset_pitch	float	y	degrees	In-cockpit camera angula
 sim/cockpit2/camera/camera_offset_heading	float	y	degrees	In-cockpit camera angular offset relative to airplane orientation (Heading)
 sim/cockpit2/camera/camera_offset_roll	float	y	degrees	In-cockpit camera angular offset relative to airplane orientation (Roll)
 sim/cockpit2/camera/camera_field_of_view	float	y	degrees	In-cockpit camera field of view
+
 sim/cockpit2/clock_timer/elapsed_time_hours	int	n	hours	Elapsed time on the timer, hours
 sim/cockpit2/clock_timer/elapsed_time_minutes	int	n	minutes	Elapsed time on the timer, minutes
 sim/cockpit2/clock_timer/elapsed_time_seconds	int	n	seconds	Elapsed time on the timer, seconds

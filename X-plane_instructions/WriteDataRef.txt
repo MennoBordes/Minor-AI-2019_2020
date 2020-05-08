@@ -24,8 +24,10 @@ sim/aircraft/overflow/acf_flap_ptch	float	y	???	flap actuation... like for reall
 sim/aircraft/overflow/acf_roll_co	float	y
 sim/aircraft/overflow/acf_brake_co	float	y	???	rolling and braking
 sim/aircraft/overflow/acf_flaps_with_vecEQ	int	y	???	bring in the flaps with thrust vector
+
 sim/atc/com1_tuned_facility	int	n	enum	The ATC facility type that the user's aircraft is tuned to. 0=None, 1=Del, 2=Gnd, 3=Twr, 4=Tracon, 5=Ctr
 sim/atc/com2_tuned_facility	int	n	enum	The ATC facility type that the user's aircraft is tuned to. 0=None, 1=Del, 2=Gnd, 3=Twr, 4=Tracon, 5=Ctr
+
 sim/cockpit/autopilot/autopilot_mode	int	y	enum	The autopilot master mode (off=0, flight director=1, on=2)
 sim/cockpit/autopilot/altitude	float	y	ftmsl	Altitude dialed into the AP
 sim/cockpit/autopilot/vertical_velocity	float	y	fpm	Vertical speed to hold
@@ -121,6 +123,7 @@ sim/cockpit/switches/EFIS_shows_NDBs	int	y	boolean	Does the EFIS show NDBs?
 sim/cockpit/switches/argus_mode	int	y	enum	What mode is the Argus 2000 in
 sim/cockpit/switches/no_smoking	int	y	boolean	No Smoking
 sim/cockpit/switches/fasten_seat_belts	int	y	boolean	Fasten Seat Belts
+
 sim/flightmodel/controls/sbrkrat	float	y	[0..1.5]	Actual speed brake deployment [0..1 = schedule for in-air, 1..1.5 = extra deployment when on ground]
 sim/flightmodel/controls/flaprqst	float	y	[0..1]	Requested flap deployment, 0 = off, 1 = max
 sim/flightmodel/controls/tail_lock_rat	float	y	ratio	This is how locked the tail-wheel is ... 0 is free castoring, 1 is locked.
@@ -153,7 +156,6 @@ sim/flightmodel/engine/ENGN_thro_use	float[8]	y	ratio	Throttle (per engine) when
 sim/flightmodel/engine/ENGN_propmode	int[8]	y	enum	Prop mode: feather=0,normal=1,beta=2,reverse=3
 sim/flightmodel/engine/POINT_pitch_deg_use	float[8]	y	degrees	Pitch as we use, after all effects.   Use override_prop_pitch to change.
 sim/flightmodel/engine/apr_mode	int	y	enum	0=Stdby (will arm at sufficient throttle), 1=Armed, 2=Active
-
 
 sim/joystick/yoke_pitch_ratio	float	y	[-1..1]	The deflection of the joystick axis controlling pitch. Use override_joystick or override_joystick_pitch
 sim/joystick/yolk_pitch_ratio	float	y	[-1..1]	Legacy - this spelling error is still present for
