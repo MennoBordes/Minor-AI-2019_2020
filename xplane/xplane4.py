@@ -1,5 +1,6 @@
 from time import sleep
-import XPlaneConnect.xpc as xpc
+import xpc
+
 #
 # with xpc.XPlaneConnect() as client:
 #     dref = "sim/cockpit/switches/gear_handle_status"
