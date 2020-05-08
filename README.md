@@ -45,3 +45,15 @@ In the X-plane_instuctions folder are a couple of files that will be useful for 
 
 # 4. Currently active
 View the 'todo' file in the xplane folder for the following steps
+
+
+# Branch: Menno
+**Requirements**
+```
+Python == 3.7
+```
+ 
+**Install pip packages**
+```
+pip install tensorflow
+```
