@@ -1,8 +1,11 @@
-import tensorflow as tf
+# import tensorflow as tf
 import numpy as np
 import random
 import os
+import gym
+import gym_xplane
 
+'''
 CWD = os.getcwd()
 # print(CWD)
 
@@ -18,3 +21,9 @@ model.add(tf.keras.layers.Dense(32, input_shape=(16,)))
 model.add(tf.keras.layers.Dense(32))
 
 print(model)
+'''
+
+env = gym.make('xplane-gym-v0')
+print(env)
+env.reset()
+env.close()
