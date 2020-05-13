@@ -92,11 +92,9 @@ class XPlaneEnv(py_environment.PyEnvironment):
       with xpc.XPlaneConnect() as client:
         command = 'sim/joystick/yoke_pitch_ratio'
         client.sendDREF(command, 1)
-      self._state += command
-    else:
-      raise ValueError('`action` should be between 0 and 100.')
+      self._state += 1
 
-    if self._episode_ended:
+    if self._episode_ended or self._state == 10:
       reward = 1
       return ts.termination(np.array([self._state], dtype=np.int32), reward)
     else:
