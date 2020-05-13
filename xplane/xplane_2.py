@@ -13,7 +13,6 @@ class XPlaneTimeout(Exception):
 
 
 class XPlaneUdp:
-
     '''
     Get data from XPlane via network.
     Use a class to implement RAI Pattern for the UDP socket. 
@@ -74,8 +73,8 @@ class XPlaneUdp:
         cmd = b"RREF\x00"
         string = dataref.encode()
         message = struct.pack("<5sii400s", cmd, freq, idx, string)
-        print("read-message",message)
-        assert(len(message) == 413)
+        # print("read-message", message)
+        assert (len(message) == 413)
         self.socket.sendto(message, (self.BeaconData["IP"], self.UDP_PORT))
 
     def GetValues(self):
@@ -87,16 +86,16 @@ class XPlaneUdp:
             retvalues = {}
             # * Read the Header "RREFO".
             header = data[0:5]
-            if(header != b"RREF,"):  # (was b"RREFO" for XPlane10)
+            if (header != b"RREF,"):  # (was b"RREFO" for XPlane10)
                 print("Unknown packet: ", binascii.hexlify(data))
             else:
                 # * We get 8 bytes for every dataref sent:
                 #   An integer for idx and the float value.
                 values = data[5:]
                 lenvalue = 8
-                numvalues = int(len(values)/lenvalue)
+                numvalues = int(len(values) / lenvalue)
                 for i in range(0, numvalues):
-                    singledata = data[(5+lenvalue*i):(5+lenvalue*(i+1))]
+                    singledata = data[(5 + lenvalue * i):(5 + lenvalue * (i + 1))]
                     (idx, value) = struct.unpack("<if", singledata)
                     # print("(idx,value)",(idx,value))
                     if idx in self.datarefs.keys():
@@ -110,7 +109,7 @@ class XPlaneUdp:
             raise XPlaneTimeout
         return self.xplaneValues
 
-    def AddDataWriter(self, dataWrite, freq=None):      # WORK IN PROGRESS
+    def AddDataWriter(self, dataWrite, freq=None):  # WORK IN PROGRESS
         idx = -9999
 
         if freq == None:
@@ -131,7 +130,7 @@ class XPlaneUdp:
         cmd = b"DREF\x00"
         string = dataWrite.encode()
         message = struct.pack("<5sii400s", cmd, freq, idx, string)
-        assert(len(message) == 413)
+        assert (len(message) == 413)
         self.socket.sendto(message, (self.BeaconData["IP"], self.UDP_PORT))
 
     def WriteValues(self):
@@ -171,7 +170,7 @@ class XPlaneUdp:
                 # * Header
                 header = packet[0:5]
                 if header != b"BECN\x00":
-                    print("Unknown packet from "+sender[0])
+                    print("Unknown packet from " + sender[0])
                     print(str(len(packet)) + " bytes")
                     print(packet)
                     print(binascii.hexlify(packet))
@@ -198,10 +197,10 @@ class XPlaneUdp:
                     (
                         beacon_major_version,  # 1 at the time of X-Plane 10.40
                         beacon_minor_version,  # 1 at the time of X-Plane 10.40
-                        application_host_id,   # 1 for X-Plane, 2 for PlaneMaker
+                        application_host_id,  # 1 for X-Plane, 2 for PlaneMaker
                         xplane_version_number,  # 104014 for X-Plane 10.40b14
-                        role,                  # 1 for master, 2 for extern visual, 3 for IOS
-                        port,                  # port number X-Plane is listening on
+                        role,  # 1 for master, 2 for extern visual, 3 for IOS
+                        port,  # port number X-Plane is listening on
                     ) = struct.unpack("<BBiiIH", data)
                     computer_name = packet[21:-1]
                     # if beacon_major_version == 1 \
@@ -224,7 +223,7 @@ class XPlaneUdp:
         Function for instantiating the requests
         """
 
-        if False:
+        if True:
             altitude = False
             position = False
             speed = False
@@ -243,10 +242,15 @@ class XPlaneUdp:
             self.AddDataReader("sim/flightmodel/position/indicated_airspeed")
             self.AddDataReader("sim/flightmodel/position/indicated_airspeed2")
             self.AddDataReader("sim/flightmodel/position/true_airspeed")
-        
 
+        # self.AddDataReader("sim/flightmodel/position/latitude")
+        # self.AddDataReader("sim/flightmodel/position/longitude")
+        # self.AddDataReader("sim/flightmodel/position/elevation")
+        # self.AddDataReader("sim/cockpit/switches/gear_handle_status")
+        # self.AddDataReader("sim/flightmodel/position/psi")
+        self.AddDataReader("sim/cockpit2/controls/parking_brake_ratio")
         # Testing
-        
+
         # self.AddDataReader("sim/world/winch/winch_speed_knots")
         # self.AddDataReader("sim/weather/wind_altitude_msl_m[0]")
         # self.AddDataReader("sim/weather/wind_direction_degt[0]")
@@ -257,6 +261,7 @@ class XPlaneUdp:
         # self.AddDataReader("sim/weather/wind_altitude_msl_m[2]")
         # self.AddDataReader("sim/weather/wind_direction_degt[2]")
         # self.AddDataReader("sim/weather/wind_speed_kt[2]")
+
 
 # Example how to use:
 # You need a running xplane in your network.
