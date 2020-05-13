@@ -6,7 +6,7 @@ To install custom env run:
     pip install -e .
 ```
 
-To use custom env run:
+To use custom env use:
 ```
 import gym
 import gym_xplane
