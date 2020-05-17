@@ -4,7 +4,7 @@ from gym import spaces
 
 
 class xplane_space():
-    def _action_space(self):
+    def Action_space(self):
         """
         return spaces.Dict({"Latitudinal_Stick":  spaces.Box(low=-1, high=1, shape=()),
             "Longitudinal_Stick":  spaces.Box(low=-1, high=1, shape=()),
@@ -14,7 +14,7 @@ class xplane_space():
         """
         return spaces.Box(np.array([-1, -1, -1, -1/4]), np.array([1, 1, 1, 1]))
 
-    def _observation_space(self):
+    def Observation_space(self):
         """
         return spaces.Dict({"Latitude":  spaces.Box(low=0, high=360, shape=()),
             "Longitude":  spaces.Box(low=0, high=360, shape=()),

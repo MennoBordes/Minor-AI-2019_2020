@@ -1,12 +1,9 @@
 import gym
-from time import sleep
-import numpy as np
+from time import sleep, clock
 
 import gym_xplane.envs.xpc2 as xpc
 import gym_xplane.space_definition as envSpaces
 import gym_xplane.parameters as parameters
-from gym import error, spaces, utils
-from gym.utils import seeding
 
 
 class Initial:
@@ -20,11 +17,11 @@ class XplaneENV(gym.Env):
     def __init__(self, clientAddr, xpHost, xpPort, clientPort, timeout=3000, max_episode_steps=5000, test=False):
         XplaneENV.CLIENT = None
 
-        _envspace = envSpaces.xplane_space()
+        EnvSpace = envSpaces.xplane_space()
 
         self.ControlParameters = parameters.getParameters()
-        self.action_space = _envspace._action_space()
-        self.observation_space = _envspace._observation_space()
+        self.action_space = EnvSpace.Action_space()
+        self.observation_space = EnvSpace.Observation_space()
 
         self.ControlParameters.episodeStep = 0
         self.max_episode_steps = max_episode_steps
@@ -38,13 +35,11 @@ class XplaneENV(gym.Env):
             print("connection error, check if xplane is running")
         print("I am client: ", XplaneENV.CLIENT)
 
-        self.value = "not yet implemented"
-
     def close(self):
         XplaneENV.CLIENT.close()
 
     def step(self, action):
-        print("Not yet implemented")
+        print("STEP not yet implemented")
 
     def reset(self):
         """
@@ -56,10 +51,6 @@ class XplaneENV(gym.Env):
         # Reset time to 10:00 (32400.0)
         XplaneENV.CLIENT.sendDREF("sim/time/zulu_time/sec", 32400.0)
         # XplaneENV.CLIENT.sendDREF("sim/cockpit/switches/gear_handle_status", 1)
-        print("gearhandle: ", XplaneENV.CLIENT.getDREF("sim/cockpit/switches/gear_handle_status"))
-
-        ctrl = XplaneENV.CLIENT.getCTRL()
-        print("control: ", ctrl)
 
         # Legacy for xpc.py
         if False:
@@ -104,8 +95,6 @@ class XplaneENV(gym.Env):
                 # print("Set camera")
                 client.sendVIEW(xpc.ViewType.Chase)
                 sleep(1)
-
-        print("No RETURN implemented yet")
 
     def _get_info(self):
         """Returns a dictionary containing debug info."""

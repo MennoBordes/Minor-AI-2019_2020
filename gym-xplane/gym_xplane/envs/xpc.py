@@ -371,11 +371,10 @@ class XPlaneConnect(object):
         if y < -1:
             raise ValueError("y must be greater than or equal to -1.")
 
-        if msg == None:
+        if msg is None:
             msg = ""
 
         msgLen = len(msg)
-
         buffer = struct.pack(b"<4sxiiB" + (str(msgLen) + "s").encode(), b"TEXT", x, y, msgLen, msg.encode())
         self.sendUDP(buffer)
 

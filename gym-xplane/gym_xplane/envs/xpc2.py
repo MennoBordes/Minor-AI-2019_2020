@@ -7,7 +7,7 @@ import gym_xplane.keyPress as key
 
 
 class XPlaneConnect():
-    '''XPlaneConnect (XPC) facilitates communication to and from the XPCPlugin.'''
+    """XPlaneConnect (XPC) facilitates communication to and from the XPCPlugin."""
     socket = None
 
     # Basic Functions
@@ -26,17 +26,13 @@ class XPlaneConnect():
         # Validate parameters
         # xpIP = None
         try:
-
             socket.inet_pton(socket.AF_INET, xpHost)
             socket.inet_pton(socket.AF_INET, clientAddr)
-
-
-        # print('Checking XpIp....',xpIP)
 
         except:
             raise ValueError("ip address not legal.")
 
-        self.xpIp = xpHost
+        self.xpIP = xpHost
         if xpPort < 0 or xpPort > 65535:
             raise ValueError("The specified X-Plane port is not a valid port number.")
         if clientPort < 0 or clientPort > 65535:
@@ -44,20 +40,13 @@ class XPlaneConnect():
         if timeout < 0:
             raise ValueError("timeout must be non-negative.")
 
-        # print('checking Client Port ...', port)
         # Setup XPlane IP and port
-        self.xpDst = (self.xpIp, xpPort)
-        # print('checking Destination Addr ...', self.xpDst)
+        self.xpDst = (self.xpIP, xpPort)
         # Create and bind socket
         self.clientDst = (clientAddr, clientPort)
-        # print('checking Client Addr ...', clientPort)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 
         self.socket.bind(self.clientDst)
-
-        # print('my socket', self.socket.getsockname())
-
-        # print('finished ...')
 
         timeout /= 1000.0
         self.socket.settimeout(timeout)
@@ -121,8 +110,8 @@ class XPlaneConnect():
 
         # Rebind socket
         clientAddr = ("0.0.0.0", port)
-        timeout = self.socket.gettimeout();
-        self.socket.close();
+        timeout = self.socket.gettimeout()
+        self.socket.close()
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         self.socket.bind(clientAddr)
         self.socket.settimeout(timeout)
@@ -144,7 +133,7 @@ class XPlaneConnect():
         rows = (len(buffer) - 5) / 36
         data = []
         for i in range(rows):
-            data.append(struct.unpack_from(b"9f", buffer, 5 + 36*1))
+            data.append(struct.unpack_from(b"9f", buffer, 5 + 36 * i))
         return data
 
     def sendDATA(self, data):
@@ -354,7 +343,7 @@ class XPlaneConnect():
 
             Returns: A sequence of data representing the values of the requested dataref.
         """
-        return self.getDREFs([dref])  # [0]
+        return self.getDREFs([dref])[0]
 
     def getDREFs(self, drefs):
         """Gets the value of one or more X-Plane datarefs.
@@ -369,21 +358,20 @@ class XPlaneConnect():
         buffer = struct.pack(b"<4sxB", b"GETD", len(drefs))
         for dref in drefs:
             # fmt = "<B{0:d}s".format(len(dref))
-            fmt = bytes('<B{0:d}s'.format(len(dref), dref), 'utf-8')
-            buffer += struct.pack(fmt, len(dref), dref.encode('utf-8'))
+            fmt = '<B{0:d}s'.format(len(dref), dref)
+            buffer += struct.pack(fmt.encode(), len(dref), dref.encode())
         self.sendUDP(buffer)
 
         # Read and parse response
         buffer = self.readUDP()
         resultCount = struct.unpack_from(b"B", buffer, 5)[0]
-        # print(resultCount)
         offset = 6
         result = []
         for i in range(resultCount):
             rowLen = struct.unpack_from(b"B", buffer, offset)[0]
             offset += 1
             fmt = "<{0:d}f".format(rowLen)
-            row = struct.unpack_from(fmt, buffer, offset)
+            row = struct.unpack_from(fmt.encode(), buffer, offset)
             result.append(row)
             offset += rowLen * 4
         return result
@@ -404,11 +392,11 @@ class XPlaneConnect():
         if y < -1:
             raise ValueError("y must be greater than or equal to -1.")
 
-        if msg == None:
+        if msg is None:
             msg = ""
 
         msgLen = len(msg)
-        buffer = struct.pack(b"<4sxiiB" + str(msgLen) + "s", b"TEXT", x, y, msgLen, msg)
+        buffer = struct.pack(b"<4sxiiB" + (str(msgLen) + "s").encode(), b"TEXT", x, y, msgLen, msg.encode())
         self.sendUDP(buffer)
 
     def sendVIEW(self, view):
@@ -450,7 +438,7 @@ class XPlaneConnect():
         if op == 3:
             buffer = struct.pack(b"<4sxBB", b"WYPT", 3, 0)
         else:
-            buffer = struct.pack(b"<4sxBB" + str(len(points)) + b"f", b"WYPT", op, len(points), *points)
+            buffer = struct.pack(("<4sxBB" + str(len(points)) + "f").encode(), b"WYPT", op, len(points), *points)
         self.sendUDP(buffer)
 
     def resetPlane(self):
@@ -463,7 +451,6 @@ class XPlaneConnect():
         # Re-apply landing gear switch
         self.sendDREF("sim/cockpit2/controls/gear_handle_down", 1)
         self.sendDREF("sim/cockpit/switches/gear_handle_status", 1)
-
 
         sleep(.5)
         self.sendVIEW(ViewType.Chase)
