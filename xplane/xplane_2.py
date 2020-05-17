@@ -249,6 +249,7 @@ class XPlaneUdp:
         # self.AddDataReader("sim/cockpit/switches/gear_handle_status")
         # self.AddDataReader("sim/flightmodel/position/psi")
         self.AddDataReader("sim/cockpit2/controls/parking_brake_ratio")
+        self.AddDataReader("sim/cockpit2/controls/gear_handle_down")
         # Testing
 
         # self.AddDataReader("sim/world/winch/winch_speed_knots")
