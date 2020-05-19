@@ -5,6 +5,7 @@ import gym_xplane.envs.xpc2 as xpc
 import gym_xplane.space_definition as envSpaces
 import gym_xplane.parameters as parameters
 import numpy as np
+import json
 
 
 class Initial:
@@ -29,12 +30,16 @@ class XplaneENV(gym.Env):
         self.stateLength = 10
         self.actions = [0, 0, 0, 0]
         self.test = test
+        self.waypoints = []
         try:
             XplaneENV.CLIENT = Initial.connect(clientAddr, xpHost, xpPort, clientPort, timeout, max_episode_steps)
-
         except:
             print("connection error, check if xplane is running")
+            raise Exception("connection error, check if xplane is running")
         print("I am client: ", XplaneENV.CLIENT)
+        # Increase simulation speed
+        XplaneENV.CLIENT.sendDREF('sim/time/sim_speed', 500)
+        self.position = XplaneENV.CLIENT.getPOSI()
 
     def close(self):
         XplaneENV.CLIENT.close()
@@ -90,6 +95,16 @@ class XplaneENV(gym.Env):
         """
         # Reset xplane env
         XplaneENV.CLIENT.resetPlane()
+        reset_finished = False
+        # Wait until finished loading
+        while not reset_finished:
+            try:
+                XplaneENV.CLIENT.getDREF("sim/test/test_float")
+                reset_finished = True
+            except:
+                print('Resetting environment.')
+                pass
+        sleep(2)
         # Reset time to 10:00 (32400.0)
         XplaneENV.CLIENT.sendDREF("sim/time/zulu_time/sec", 32400.0)
         # XplaneENV.CLIENT.sendDREF("sim/cockpit/switches/gear_handle_status", 1)
@@ -142,4 +157,34 @@ class XplaneENV(gym.Env):
         return {"Control Parameters": self.ControlParameters, "Actions": self.action_space}
 
     def render(self, mode='human', close=False):
+        pass
+
+    def add_waypoints(self, json_path):
+        waypoints = []
+
+        with open(json_path) as json_file:
+            nodes = json.load(json_file)
+            data = nodes['nodes']
+            for index, data in enumerate(data):
+                if index is 0:
+                    # Set first waypoint to starting position
+                    waypoints.append(self.position[0])
+                    waypoints.append(self.position[1])
+                    waypoints.append(self.position[2])
+
+                    # Add waypoints for Schiphol end of runway 18R
+                    waypoints.append(52.3286247253418)      # Latitude
+                    waypoints.append(4.708907604217529)     # Longitude
+                    waypoints.append(150)                   # Altitude
+                    continue
+                # Add waypoints from file
+                waypoints.append(data['lat'])
+                waypoints.append(data['lon'])
+                waypoints.append(data['alt'])
+
+        self.waypoints = waypoints
+        XplaneENV.CLIENT.sendWYPT(op=1, points=waypoints)
+
+    def remove_waypoints(self):
+        XplaneENV.CLIENT.sendWYPT(op=3, points=[])
         pass
