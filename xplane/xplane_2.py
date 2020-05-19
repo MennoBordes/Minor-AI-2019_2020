@@ -243,13 +243,15 @@ class XPlaneUdp:
             self.AddDataReader("sim/flightmodel/position/indicated_airspeed2")
             self.AddDataReader("sim/flightmodel/position/true_airspeed")
 
-        # self.AddDataReader("sim/flightmodel/position/latitude")
-        # self.AddDataReader("sim/flightmodel/position/longitude")
-        # self.AddDataReader("sim/flightmodel/position/elevation")
+        self.AddDataReader("sim/flightmodel/position/latitude")
+        self.AddDataReader("sim/flightmodel/position/longitude")
+        self.AddDataReader("sim/flightmodel/position/elevation")
         # self.AddDataReader("sim/cockpit/switches/gear_handle_status")
         # self.AddDataReader("sim/flightmodel/position/psi")
-        self.AddDataReader("sim/cockpit2/controls/parking_brake_ratio")
-        self.AddDataReader("sim/cockpit2/controls/gear_handle_down")
+        # self.AddDataReader("sim/cockpit2/controls/parking_brake_ratio")
+        # self.AddDataReader("sim/cockpit2/controls/gear_handle_down")
+        # self.AddDataReader("sim/time/total_running_time_sec")
+        # self.AddDataReader("sim/time/total_flight_time_sec")
         # Testing
 
         # self.AddDataReader("sim/world/winch/winch_speed_knots")
