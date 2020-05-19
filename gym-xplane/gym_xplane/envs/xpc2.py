@@ -158,7 +158,7 @@ class XPlaneConnect():
         """Gets position information for the specified aircraft.
 
         Args:
-          ac: The aircraft to set the control surfaces of. 0 is the main/player aircraft.
+          ac: The aircraft to get the control surfaces of. 0 is the main/player aircraft.
         """
         # Send request packed_data = s.pack(string.encode('ascii'))
         # the syntax below is also correct
@@ -337,7 +337,6 @@ class XPlaneConnect():
 
     def getDREF(self, dref):
         """Gets the value of an X-Plane dataref.
-
             Args:
               dref: The name of the dataref to get.
 
@@ -347,7 +346,6 @@ class XPlaneConnect():
 
     def getDREFs(self, drefs):
         """Gets the value of one or more X-Plane datarefs.
-
             Args:
               drefs: The names of the datarefs to get.
 
@@ -451,8 +449,8 @@ class XPlaneConnect():
         # Re-apply landing gear switch
         self.sendDREF("sim/cockpit2/controls/gear_handle_down", 1)
         self.sendDREF("sim/cockpit/switches/gear_handle_status", 1)
-
-        sleep(.5)
+        self.sendDREF("sim/cockpit2/controls/parking_brake_ratio", 0)
+        sleep(1)
         self.sendVIEW(ViewType.Chase)
         self.pauseSim(False)
 

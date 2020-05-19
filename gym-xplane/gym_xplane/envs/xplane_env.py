@@ -4,6 +4,7 @@ from time import sleep, clock
 import gym_xplane.envs.xpc2 as xpc
 import gym_xplane.space_definition as envSpaces
 import gym_xplane.parameters as parameters
+import numpy as np
 
 
 class Initial:
@@ -26,7 +27,7 @@ class XplaneENV(gym.Env):
         self.ControlParameters.episodeStep = 0
         self.max_episode_steps = max_episode_steps
         self.stateLength = 10
-        self.action = [0, 0, 0, 0]
+        self.actions = [0, 0, 0, 0]
         self.test = test
         try:
             XplaneENV.CLIENT = Initial.connect(clientAddr, xpHost, xpPort, clientPort, timeout, max_episode_steps)
@@ -38,7 +39,48 @@ class XplaneENV(gym.Env):
     def close(self):
         XplaneENV.CLIENT.close()
 
-    def step(self, action):
+    def step(self, actions):
+        self.ControlParameters.flag = False  # For synchronization during training
+
+        reward = -1
+        actions_ = []
+        margin = [3.5, 15]  # Margin allowed on altitude and heading
+
+        j = 0  # Getting simulation timing measurement
+
+        try:
+            # print("prevous action", self.actions)  # prvious ation
+            # print("action on ctrl ...", XplaneENV.CLIENT.getCTRL())  # action on control surface
+            i = clock()
+
+            XplaneENV.CLIENT.sendCTRL(actions)  # send action
+            sleep(0.0005)
+            self.actions = actions
+
+            state = []
+            state2 = []
+
+            stateVariableTemp = XplaneENV.CLIENT.getDREFs(self.ControlParameters.stateVariable)
+            self.ControlParameters.stateAircraftPosition = list(XplaneENV.CLIENT.getPOSI())
+            self.ControlParameters.stateVariableValue = [i[0] for i in stateVariableTemp]
+
+            state = self.ControlParameters.stateAircraftPosition + self.ControlParameters.stateVariableValue
+            # print("state 5", state[5])
+
+            # ******************************* Reward Parameters *********************************
+            rewardVector = XplaneENV.CLIENT.getDREF(self.ControlParameters.rewardVariable)[0]
+            # print(rewardVector)
+            # ***********************************************************************************
+
+            P = XplaneENV.CLIENT.getDREF("sim/flightmodel/position/P")[0]
+            Q = XplaneENV.CLIENT.getDREF("sim/flightmodel/position/Q")[0]
+            R = XplaneENV.CLIENT.getDREF("sim/flightmodel/position/R")[0]
+            print("P", P, "Q", Q, "R", R)
+
+            return np.array(state2), reward, self.ControlParameters.flag, self._get_info()
+        except:
+            print("except")
+
         print("STEP not yet implemented")
 
     def reset(self):
@@ -55,7 +97,6 @@ class XplaneENV(gym.Env):
         # Legacy for xpc.py
         if False:
             with xpc.XPlaneConnect() as client:
-
                 client.resetPlane()
 
                 # Reset time to 10:00 (32400.0)
@@ -83,7 +124,7 @@ class XplaneENV(gym.Env):
                     [3, 0, 0, 0, 0, -998, -998, -998, -998], \
                     [17, 0, 0, 3.1591200828552246, 0, -998, -998, -998, -998], \
                     [62, 37515, 14938, 42118, 42132, 14938, 4404.9, 4404.9, 11107], \
-                ]
+                    ]
                 client.sendDATA(data)
                 # Reset time to 10:00 (32400.0)
                 client.sendDREF("sim/time/zulu_time_sec", 32400.0)

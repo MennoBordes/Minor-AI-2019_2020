@@ -35,10 +35,11 @@ def getParameters():
         "flag": False,
 
         "state": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        "state14": {"roll_rate": 0, "pitch_rate": 0, "altitude": 0, "pitch": 0, "roll": 0, "velocity_x": 0,
-                    "velocity_y": 0, "delta_altitude": 0, "delta_heading": 0, "yaw_rate": 0},
+        "state2": {"roll_rate": 0, "pitch_rate": 0, "altitude": 0, "pitch": 0, "roll": 0, "velocity_x": 0,
+                   "velocity_y": 0, "delta_altitude": 0, "delta_heading": 0, "yaw_rate": 0},
         "episodeStep": 0,
         "reset": False,
+        "elapsedTime": "sim/time/total_flight_time_sec",
 
     }
 
