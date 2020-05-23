@@ -6,6 +6,7 @@ import abc
 import tensorflow as tf
 import numpy as np
 import XPlaneConnect.xpc as xpc
+import json
 
 
 from tf_agents.environments import py_environment
@@ -100,6 +101,36 @@ class XPlaneEnv(py_environment.PyEnvironment):
     else:
       return ts.transition(
         np.array([self._state], dtype=np.int32), reward=0.0, discount=1.0)
+
+def add_waypoints(self, json_path):
+  waypoints = []
+
+  with open(json_path) as json_file:
+    nodes = json.load(json_file)
+    data = nodes['nodes']
+    for index, data in enumerate(data):
+      if index is 0:
+        # Set first waypoint to starting position
+        waypoints.append(self.position[0])
+        waypoints.append(self.position[1])
+        waypoints.append(self.position[2])
+
+        # Add waypoints for Schiphol end of runway 18R
+        waypoints.append(52.3286247253418)  # Latitude
+        waypoints.append(4.708907604217529)  # Longitude
+        waypoints.append(150)  # Altitude
+        continue
+      # Add waypoints from file
+      waypoints.append(data['lat'])
+      waypoints.append(data['lon'])
+      waypoints.append((data['alt'] / 3.2808))
+
+  self.waypoints = waypoints
+  XplaneENV.CLIENT.sendWYPT(op=1, points=waypoints)
+
+def remove_waypoints(self):
+  XplaneENV.CLIENT.sendWYPT(op=3, points=[])
+  pass
 
 environment = XPlaneEnv()
 utils.validate_py_environment(environment, episodes=5)
