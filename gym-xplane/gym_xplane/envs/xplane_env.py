@@ -180,7 +180,7 @@ class XplaneENV(gym.Env):
                 # Add waypoints from file
                 waypoints.append(data['lat'])
                 waypoints.append(data['lon'])
-                waypoints.append(data['alt'])
+                waypoints.append((data['alt'] / 3.2808))
 
         self.waypoints = waypoints
         XplaneENV.CLIENT.sendWYPT(op=1, points=waypoints)
