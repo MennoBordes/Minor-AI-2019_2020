@@ -11,9 +11,8 @@ from gym.utils import seeding
 class XplaneENV(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, client):
+    def __init__(self):
         self.value = "not yet implemented"
-        self.client = client
         self.action_space = spaces.Dict({"Elevons": spaces.Box(low=-1, high=1, shape=()),
                                          "Ailerons": spaces.Box(low=-1, high=1, shape=()),
                                          "Rudder": spaces.Box(low=-1, high=1, shape=()),
@@ -36,6 +35,7 @@ class XplaneENV(gym.Env):
                                               "flap_ratio":  spaces.Box(low=-100, high=100, shape=()),
                                               "speed": spaces.Box(low=-2205, high=2205, shape=())})
         self.parameters = params.getParameters()
+        self.client = xpc.XPlaneConnect()
 
 
     def step(self, client, actions):
