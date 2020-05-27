@@ -1,23 +1,25 @@
 import gym
-from time import sleep
+import json
 import numpy as np
 import gym_xplane.parameters as params
-
 import gym_xplane.envs.xpc as xpc
+from time import sleep, clock
 from gym import error, spaces, utils
 from gym.utils import seeding
 
+class Initial:
+    def connect(self, client_addr, xp_host, xp_port, client_port, timeout, max_steps):
+        return xpc.XPlaneConnect(client_addr, xp_host, xp_port, client_port, timeout, max_steps)
 
 class XplaneENV(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self):
+    def __init__(self, client_addr, xp_host, xp_port, client_port, max_steps=5000, timeout=3000):
         self.value = "not yet implemented"
-        self.action_space = spaces.Dict({"Elevons": spaces.Box(low=-1, high=1, shape=()),
-                                         "Ailerons": spaces.Box(low=-1, high=1, shape=()),
-                                         "Rudder": spaces.Box(low=-1, high=1, shape=()),
-                                         "Left Throttle": spaces.Box(low=-1, high=1, shape=()),
-                                         "Right Throttle": spaces.Box(low=-1, high=1, shape=()),
+        self.action_space = spaces.Dict({"Latitudinal Stick": spaces.Box(low=-1, high=1, shape=()),
+                                         "Longitudinal Stick": spaces.Box(low=-1, high=1, shape=()),
+                                         "Rudder Pedals": spaces.Box(low=-1, high=1, shape=()),
+                                         "Throttle": spaces.Box(low=-1, high=1, shape=()),
                                          "Flaps": spaces.Box(low=0, high=1, shape=()),
                                          "Gear": spaces.Discrete(2)})
         self.observation_space = spaces.Dict({"Latitude":  spaces.Box(low=0, high=360, shape=()),
@@ -36,105 +38,54 @@ class XplaneENV(gym.Env):
                                               "speed": spaces.Box(low=-2205, high=2205, shape=())})
         self.parameters = params.getParameters()
         self.client = xpc.XPlaneConnect()
-
-
-    def step(self, client, actions):
-        self.parameters.flag = False
-        self.parameters.episodeReward = 0
-        self.episode_steps += 1
-        self.client = client
-        tempreward = 0.
-        tempreward2 = 0.
-        tempreward3 = 0.
-        perturbationAllowed = 15.0
-        minimumAltitude = 550  # meters
-        minimumRuntime = 80.50
-        minimumDistance = 0.5;
-
+        self.max_steps = max_steps
+        self.waypoints = []
         try:
-            act = [actions['Elevons']]
-
-            act.extend(
-                [actions['Ailerons'], actions['Rudder'], actions['Left Throttle'], actions['Right Throttle'], int(actions['Gear']),
-                 actions['Flaps']])
-
-            self.client.sendCTRL(act)
-
-            state = [];
-
-            stateVariableTemp = self.client.getDREFs(self.parameters.stateVariable)
-            self.parameters.stateAircraftPosition = list(self.client.getPOSI());
-
-            self.parameters.stateVariableValue = [i[0] for i in stateVariableTemp]
-
-            # 14 prameters
-            state = self.parameters.stateAircraftPosition + self.parameters.stateVariableValue
-
-            if len(state) == 14:
-                self.parameters.state14 = state
-            else:
-                self.parameters.state14 = self.parameters.state14
-
-            rewardVector = self.client.getDREF(self.parameters.rewardVariable)
-            headingReward = self.client.getDREF(self.parameters.headingReward)[0][0]
-
-            if self.parameters.stateAircraftPosition[5] > headingReward + perturbationAllowed:
-                tempreward -= 1.
-
-            else:
-                tempreward += 1.
-
-            if self.parameters.stateAircraftPosition[5] < minimumAltitude:
-                tempreward2 -= 1.
-            else:
-                tempreward2 += 1.
-
-            if rewardVector[0][0] > minimumDistance:
-                tempreward3 -= 0.5
-            else:
-                tempreward3 += 0.5
-
-            self.parameters.episodeReward = (tempreward + tempreward2 + tempreward3) / 3.
-
-            self.parameters.totalReward += self.parameters.episodeReward
-
-            if self.client.getDREFs(self.parameters.on_ground)[0][0] >= 1 or \
-                    client.getDREFs(self.parameters.crash)[0][0] <= 0:
-
-                self.parameters.flag = True
-                self.parameters.totalReward -= 2
-
-
-            elif self.client.getDREF(self.parameters.timer2)[0][0] > minimumRuntime:
-                self.parameters.flag = True
-                self.parameters.totalReward += 2
-
-            # ***************** reformat and send  action ***************************************************
-
-            if self.episode_steps >= self.max_episode_steps:
-                self.parameters.flag = True
-                reward = self.parameters.totalReward
-
-            ### final episode or loop episode
-            if self.parameters.flag:
-                reward = self.parameters.totalReward
-                # print('final reward', self.parameters.totalReward )
-                self.parameters.flag = True
-                self.parameters.totalReward = 0.
-            else:
-                reward = self.parameters.episodeReward
-                # print('total before',reward  )
-            # agent.observe(state, actions);
-            # print('flag; ',parameters.flag,' episode reward: ',parameters.episodeReward,
-            #               ' Total reward',parameters.totalReward, ' reward:',reward)
-            # print('reward table',self.parameters.episodeReward,self.parameters.totalReward)
-
+            XplaneENV.CLIENT = Initial.connect(client_addr, xp_host, xp_port, client_port, timeout, max_steps)
         except:
-            reward = self.parameters.episodeReward
-            self.parameters.flag = False
-            self.parameters.state14 = self.parameters.state14
+            print("connection error, check if xplane is running")
+            raise Exception("connection error, check if xplane is running")
+        print("I am client: ", XplaneENV.CLIENT)
+        # Increase simulation speed
+        XplaneENV.CLIENT.sendDREF('sim/time/sim_speed', 500)
+        self.position = XplaneENV.CLIENT.getPOSI()
 
-        return self.parameters.state14, reward, self.parameters.flag, self._get_info()
+    def step(self, actions):
+        self.parameters.flag = False
+
+        reward = -1
+        actions_ = []
+        margin = [3.5, 15]
+
+        j = 0
+        with xpc.XPlaneConnect() as client:
+            try:
+                i = clock()
+                self.actions = actions
+
+                state1 = []
+                state2 = []
+
+                stateVariableTemp =client.getDREFs(self.parameters.stateVariable)
+                self.parameters.stateAircraftPosition = list(self.client.getPOSI())
+                self.parameters.stateVariableValue = [i[0] for i in stateVariableTemp]
+
+                state1 = self.parameters.stateAircraftPosition + self.parameters.stateVariableValue
+
+                # ******************************* Reward Parameters *********************************
+                rewardVector = client.getDREF(self.parameters.rewardVariable)[0]
+                # print(rewardVector)
+                # ***********************************************************************************
+
+                P = client.getDREF("sim/flightmodel/position/P")[0]
+                Q = client.getDREF("sim/flightmodel/position/Q")[0]
+                R = client.getDREF("sim/flightmodel/position/R")[0]
+                print("P", P, "Q", Q, "R", R)
+
+                return np.array(state2), reward, self.parameters.flag, self._get_info()
+            except:
+                print("except")
+
     def reset(self):
         """
         Reset environment and prepare for new episode
@@ -182,5 +133,39 @@ class XplaneENV(gym.Env):
 
         print("No RETURN implemented yet")
 
+    def _get_info(self):
+        """Returns a dictionary containing debug info."""
+        return {"Control Parameters": self.parameters, "Actions": self.action_space}
+
     def render(self, mode='human', close=False):
+        pass
+
+    def add_waypoints(self, json_path):
+        waypoints = []
+
+        with open(json_path) as json_file:
+            nodes = json.load(json_file)
+            data = nodes['nodes']
+            for index, data in enumerate(data):
+                if index is 0:
+                    # Set first waypoint to starting position
+                    waypoints.append(self.position[0])
+                    waypoints.append(self.position[1])
+                    waypoints.append(self.position[2])
+
+                    # Add waypoints for Schiphol end of runway 18R
+                    waypoints.append(52.3286247253418)  # Latitude
+                    waypoints.append(4.708907604217529)  # Longitude
+                    waypoints.append(150)  # Altitude
+                    continue
+                # Add waypoints from file
+                waypoints.append(data['lat'])
+                waypoints.append(data['lon'])
+                waypoints.append((data['alt'] / 3.2808))
+
+        self.waypoints = waypoints
+        self.client.sendWYPT(op=1, points=waypoints)
+
+    def remove_waypoints(self):
+        self.client.sendWYPT(op=3, points=[])
         pass
