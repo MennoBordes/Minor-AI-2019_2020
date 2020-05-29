@@ -14,7 +14,7 @@ class Initial:
 class XplaneENV(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, client_addr, xp_host, xp_port, client_port, max_steps=5000, timeout=3000):
+    def __init__(self):
         self.value = "not yet implemented"
         self.action_space = spaces.Dict({"Latitudinal Stick": spaces.Box(low=-1, high=1, shape=()),
                                          "Longitudinal Stick": spaces.Box(low=-1, high=1, shape=()),
@@ -37,18 +37,16 @@ class XplaneENV(gym.Env):
                                               "flap_ratio":  spaces.Box(low=-100, high=100, shape=()),
                                               "speed": spaces.Box(low=-2205, high=2205, shape=())})
         self.parameters = params.getParameters()
-        self.client = xpc.XPlaneConnect()
-        self.max_steps = max_steps
         self.waypoints = []
         try:
-            XplaneENV.CLIENT = Initial.connect(client_addr, xp_host, xp_port, client_port, timeout, max_steps)
+            self.client = xpc.XPlaneConnect(xpHost="192.168.0.1", xpPort=49000)
         except:
             print("connection error, check if xplane is running")
             raise Exception("connection error, check if xplane is running")
-        print("I am client: ", XplaneENV.CLIENT)
+        print("I am client: ", self.client)
         # Increase simulation speed
-        XplaneENV.CLIENT.sendDREF('sim/time/sim_speed', 500)
-        self.position = XplaneENV.CLIENT.getPOSI()
+        self.client.sendDREF('sim/time/sim_speed', 500)
+        self.position = self.client.getPOSI()
 
     def step(self, actions):
         self.parameters.flag = False
