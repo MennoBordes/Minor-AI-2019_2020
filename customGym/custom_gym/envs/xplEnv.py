@@ -2,13 +2,14 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 
+
 class XPL(gym.Env):
-    metadata={"render.modes":["human"]}
+    metadata = {"render.modes": ["human"]}
 
     def __init__(self):
         print("init xpl")
 
-    def step(self,action):
+    def step(self, action):
         print("step")
 
     def reset(self):
@@ -19,10 +20,3 @@ class XPL(gym.Env):
 
     def quit(self):
         print("quit")
-
-  
-
-    
-
-   
-
