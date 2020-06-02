@@ -11,9 +11,10 @@ def getParameters():
         # state of the aircraft. Note that this variables will be parsed to our function and the function
         # returns a set of values. check xplane dataref file for definition of stateVariable
 
-        "stateVariable": ["sim/flightmodel/position/local_vx", "sim/flightmodel/position/local_vy",
-                          "sim/flightmodel/position/local_vz"],
-        "rewardVariable": "sim/cockpit2/radios/indicators/gps_dme_distance_nm", # ,"sim/cockpit2/radios/indicators/gps_dme_time_min",
+        # Aircraft position state variable
+        "stateAircraftPosition": [],
+        "aircraftSpeed": "sim/flightmodel/position/indicated_airspeed",
+
         "headingReward": "sim/cockpit2/radios/indicators/gps_bearing_deg_mag",
         "stateVariableValue": [],
 
@@ -28,8 +29,7 @@ def getParameters():
 
         "resetHold": [10.0],
         "NumOfStatesAndPositions": 14,
-        # Aircraft position state variable
-        "stateAircraftPosition": [],
+
         "episodeReward": 0.0,
         "totalReward": 0.0,
         "flag": False,
@@ -40,6 +40,10 @@ def getParameters():
         "episodeStep": 0,
         "reset": False,
         "elapsedTime": "sim/time/total_flight_time_sec",
+
+        "wheelFailures": ["sim/operation/failures/rel_tire1", "sim/operation/failures/rel_tire2",
+                          "sim/operation/failures/rel_tire3", "sim/operation/failures/rel_tire4",
+                          "sim/operation/failures/rel_tire5"],
 
     }
 

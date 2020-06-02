@@ -8,8 +8,10 @@ class xplane_space():
         """
         return spaces.Dict({"Latitudinal_Stick":  spaces.Box(low=-1, high=1, shape=()),
             "Longitudinal_Stick":  spaces.Box(low=-1, high=1, shape=()),
-            "Rudder_Pedals":  spaces.Box(low=-1, high=1, shape=()),"Throttle":  spaces.Box(low=-1, high=1, shape=()),
-            "Gear":  spaces.Discrete(2),"Flaps":  spaces.Box(low=0, high=1, shape=()),
+            "Rudder_Pedals":  spaces.Box(low=-1, high=1, shape=()),
+            "Throttle":  spaces.Box(low=-1, high=1, shape=()),
+            "Gear":  spaces.Discrete(2),
+            "Flaps":  spaces.Box(low=0, high=1, shape=()),
             "Speedbrakes": spaces.Box(low=-0.5, high=1.5, shape=())})
         """
         return spaces.Box(np.array([-1, -1, -1, -1/4]), np.array([1, 1, 1, 1]))
@@ -22,7 +24,8 @@ class xplane_space():
             "Pitch":  spaces.Box(low=-290, high=290, shape=()),
             "Roll":  spaces.Box(low=-100, high=100, shape=()),
             "Heading":  spaces.Box(low=0, high=360, shape=()),
-            "gear":  spaces.Discrete(2),"yoke_pitch_ratio":  spaces.Box(low=-2.5, high=2.5, shape=()),
+            "gear":  spaces.Discrete(2),
+            "yoke_pitch_ratio":  spaces.Box(low=-2.5, high=2.5, shape=()),
             "yoke_roll_ratio":  spaces.Box(low=-300, high=300, shape=()),
             "yoke_heading_ratio":  spaces.Box(low=-180, high=180,shape=()),
             "alpha":  spaces.Box(low=-100, high=100,shape=()),
