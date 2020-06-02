@@ -24,42 +24,38 @@ if __name__ == '__main__':
     parser.add_argument('--xpPort', help='xplane port', default=49009)
     parser.add_argument('--clientPort', help='client port', default=1)
     args = parser.parse_args()
-    # env = gym.make('xplane-gym-v0', clientAddr=args.clientAddr, xpHost=args.xpHost,
-    #                xpPort=args.xpPort, clientPort=args.clientPort)
-    env = gym.make('xplane-gym-v0')
-    # env.reset()
-    # env.clientAddr = args.clientAddr
-    # env.xpHost = args.xpHost
-    # env.xpPort = args.xpPort
-    # env.clientPort = args.xpPort
-    # env.reset()
 
+    env = gym.make('xplane-gym-v0')
+    env.reset()
     # Create waypoints to target
     env.remove_waypoints()
     # env.add_waypoints('Routes/EHAM-LEVC_amsterdam-valencia.json')
-    env.add_waypoints('Routes/EHAM-LZIB_amsterdam-bratislava.json')
+    # env.add_waypoints('Routes/EHAM-LZIB_amsterdam-bratislava.json')
+    env.add_waypoints('Routes/flight_straight_1.json', land_start=False)
 
     # SEED environment
     env.action_space.seed(0)
 
     agent = RandomAgent(env.action_space)
 
-    EPISODES = 5
+    EPISODES = 1
     episode = 0
 
     for episode in range(EPISODES):
         state = env.reset()
         done = False
-
-        # itera = 0
-        # for itera in range(100):
-        #     print(itera)
+        episode_reward = 0
         while not done:
-            action = agent.act()
+            action = agent.act(state)
             new_state, reward, done, _ = env.step(action)
 
+            episode_reward += reward
+            # print('reward: {}'.format(episode_reward))
+
+            state = new_state
             # print("State: ", state, "Reward: ", reward)
             # print("Done: ", done, "New state: ", new_state)
 
             sleep(0.05)
+        print('episode_reward: {}'.format(episode_reward))
     env.close()

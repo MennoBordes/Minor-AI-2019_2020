@@ -205,7 +205,7 @@ class XplaneENV(gym.Env):
     def render(self, mode='human', close=False):
         pass
 
-    def add_waypoints(self, json_path):
+    def add_waypoints(self, json_path, land_start=True):
         waypoints = []
 
         with open(json_path) as json_file:
@@ -214,19 +214,23 @@ class XplaneENV(gym.Env):
             for index, data in enumerate(data):
                 if index is 0:
                     # Set first waypoint to starting position
-                    waypoints.append(self.position[0])
-                    waypoints.append(self.position[1])
-                    waypoints.append(self.position[2])
-
-                    # Add waypoints for Schiphol end of runway 18R
-                    waypoints.append(52.3286247253418)      # Latitude
-                    waypoints.append(4.708907604217529)     # Longitude
-                    waypoints.append(150)                   # Altitude
+                    waypoints.append(self.start_position[0])
+                    waypoints.append(self.start_position[1])
+                    waypoints.append(self.start_position[2])
+                    if land_start:
+                        # Add waypoints for Schiphol end of runway 18R
+                        waypoints.append(52.3286247253418)      # Latitude
+                        waypoints.append(4.708907604217529)     # Longitude
+                        waypoints.append(150)                   # Altitude
                     continue
                 # Add waypoints from file
                 waypoints.append(data['lat'])
                 waypoints.append(data['lon'])
-                waypoints.append((data['alt'] / 3.2808))
+                # Calculate altitude
+                alt = data['alt']
+                if land_start:
+                    alt = round(alt / 3.2808)
+                waypoints.append(alt)
 
         XplaneENV.CLIENT.sendWYPT(op=1, points=waypoints)
 
