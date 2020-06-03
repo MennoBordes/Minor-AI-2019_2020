@@ -14,7 +14,7 @@ class xplane_space():
             "Flaps":  spaces.Box(low=0, high=1, shape=()),
             "Speedbrakes": spaces.Box(low=-0.5, high=1.5, shape=())})
         """
-        return spaces.Box(np.array([-1, -1, -1, -1/4]), np.array([1, 1, 1, 1]))
+        return spaces.Box(np.array([-1, -1, -1, -1 / 4]), np.array([1, 1, 1, 1]))
 
     def Observation_space(self):
         """
