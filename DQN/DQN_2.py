@@ -9,6 +9,7 @@ import argparse
 from time import sleep
 from datetime import datetime
 from tqdm import tqdm
+from tensorflow.keras.callbacks import TensorBoard
 
 import numpy as np
 import random
@@ -19,9 +20,13 @@ import gym_xplane
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
+DISCOUNT = 0.99
 REPLAY_MEMORY_SIZE = 50000
+MIN_REPLAY_MEMORY_SIZE = 5  # 100
+MINIBATCH_SIZE = 1  # 64
+UPDATE_TARGET_EVERY = 5
 LEARNING_RATE = 0.01
-MIN_REWARD = -1000000000000
+MIN_REWARD = -9000
 
 WAYPOINT_FILE = 'Routes/flight_straight_1.json'
 WAYPOINT_START_LAND = False
@@ -33,7 +38,6 @@ parser.add_argument('--xpHost', help='xplane host address', default='127.0.0.1')
 parser.add_argument('--xpPort', help='xplane port', default=49009)
 parser.add_argument('--clientPort', help='client port', default=1)
 args = parser.parse_args()
-
 
 env = gym.make('xplane-gym-v0')
 # Create waypoints to target
@@ -54,7 +58,24 @@ class RandomAgent(object):
         return self.action_space.sample()
 
 
+class ModifiedTensorBoard(TensorBoard):
+    # Override init
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.step = 1
+        self.writer = tf.summary.create_file_writer(self.log_dir)
 
+    def set_model(self, model):
+        pass
+
+    def on_epoch_end(self, epoch, logs=None):
+        self.update_stats(**logs)
+
+    def on_batch_end(self, batch, logs=None):
+        pass
+
+    def update_stats(self, **stats):
+        self._write_logs(stats, self.step)
 
 
 class AI_Cruise:
@@ -68,6 +89,11 @@ class AI_Cruise:
         self.target_model.set_weights(self.model.get_weights())
 
         self.replay_memory = deque(maxlen=REPLAY_MEMORY_SIZE)
+
+        # Custom tensorboard object
+        now = datetime.now()
+        now_format = now.strftime("%Y-%m-%dT%H-%M-%S")
+        self.tensorboard = ModifiedTensorBoard(log_dir="logs/{}-{}".format(self.NAME, now_format))
 
         self.target_update_counter = 0
 
@@ -118,52 +144,81 @@ class AI_Cruise:
         """
         self.replay_memory.append(transition)
 
-    # def train(self, terminal_state, step):
-    #     # Start training only if certain number of samples is already saved
-    #     if len(self.replay_memory) < MIN_REPLAY_MEMORY_SIZE:
-    #         return
-    #
-    #     # Get a minibatch of random samples from memory replay table
-    #     minibatch = random.sample(self.replay_memory, MINIBATCH_SIZE)
-    #
-    #     # Get current states from minibatch, then query NN model for Q values
-    #     current_states = np.array([transition[0] for transition in minibatch])/255
-    #     current_qs_list = self.model.predict(current_states)
-    #
-    #     # Get future states from minibatch, then query NN model for Q values
-    #     # When using target network, query it, otherwise main network should be queried
-    #     new_current_states = np.array([transition[3] for transition in minibatch])/255
-    #     future_qs_list = self.target_model.predict(new_current_states)
-    #
-    #     X = []
-    #     Y = []
-    #
-    #     # Enumerate batches
-    #     for index, (current_state, action, reward, new_current_states, done) in enumerate(minibatch):
-    #         if not done:
-    #             max_future_q = np.max(future_qs_list[index])
-    #             new_q = reward + DISCOUNT * max_future_q
-    #         else:
-    #             new_q = reward
-    #
-    #         current_qs = current_qs_list[index]
-    #         current_qs[action] = new_q
-    #
-    #         X.append(current_state)
-    #         Y.append(current_qs)
-    #
-    #     self.model.fit(np.array(X))
+    def train(self, terminal_state, step):
+        # Start training only if certain number of samples is already saved
+        if len(self.replay_memory) < MIN_REPLAY_MEMORY_SIZE:
+            return
 
-    def get_qs(self, state):
+        # Get a minibatch of random samples from memory replay table
+        minibatch = random.sample(self.replay_memory, MINIBATCH_SIZE)
+        # print('minibatch: {}'.format(minibatch))
+        # return
+
+        # Get current states from minibatch, then query NN model for Q values
+        current_states = np.array([transition[0] for transition in minibatch])
+        # print('current_states: {}'.format(current_states))
+        # return
+        # current_qs_list = self.model.predict(current_states)
+        current_qs_list = self.get_qs(current_states)
+        # print('current_qs_list: {}'.format(current_qs_list))
+        # return
+
+        # Get future states from minibatch, then query NN model for Q values
+        # When using target network, query it, otherwise main network should be queried
+        new_current_states = np.array([transition[3] for transition in minibatch]) / 255
+        # print('new_current_states: {}'.format(new_current_states))
+        # return
+
+        # future_qs_list = self.target_model.predict(new_current_states)
+        future_qs_list = self.get_qs(new_current_states, target_model=True)
+        # print("future_qs_list: {}".format(future_qs_list))
+        # return
+
+        X = []
+        y = []
+
+        # Enumerate batches
+        for index, (current_state, action, reward, new_current_states, done) in enumerate(minibatch):
+            if not done:
+                max_future_q = np.max(future_qs_list[index])
+                new_q = reward + DISCOUNT * max_future_q
+                print('max_fut_q: {} \nnew_q: {}'.format(max_future_q, new_q))
+                return
+            else:
+                new_q = reward
+
+            current_qs = current_qs_list[index]
+            print('current_qs: {} \nnew_q: {} action: {}'.format(current_qs, new_q, action))
+            current_qs[action] = new_q
+
+            X.append(current_state)
+            y.append(current_qs)
+
+        self.model.fit(np.array(X), np.array(y), batch_size=MINIBATCH_SIZE, verbose=0, shuffle=False,
+                       callbacks=[self.tensorboard] if terminal_state else None)
+
+        # Update target network counter
+        if terminal_state:
+            self.target_update_counter += 1
+
+        # If counter reaches set value, update target network with weights of main network
+        if self.target_update_counter > UPDATE_TARGET_EVERY:
+            self.target_model.set_weights(self.model.get_weights())
+            self.target_update_counter = 0
+
+    def get_qs(self, state, target_model=False):
         """
         Get Q values given current observation space (environment state)
+        :param target_model: To be executed on the target model, default = False
         :param state: The current observation state
         :return: The predicted actions
         """
 
         state_array = np.array(state)
         # print('state_array: {}'.format(state_array))
-        steering, gear, flaps = self.model.predict(state_array.reshape(-1, *state_array.shape))
+        steering, gear, flaps = self.model.predict(state_array.reshape(-1, *state_array.shape)) \
+            if target_model \
+            else self.target_model.predict(state_array.reshape(-1, *state_array.shape))
 
         # Convert landing gear from float to int
         gear = gear.astype('int')
@@ -195,7 +250,6 @@ agent2 = RandomAgent(env.action_space)
 
 ep_rewards = [-2000]
 
-
 AGGREGATE_STATS_EVERY = 2
 
 EPISODES = 5
@@ -216,7 +270,6 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
     env.remove_waypoints()
     env.add_waypoints(WAYPOINT_FILE, WAYPOINT_START_LAND)
 
-
     # Reset flag and start iterating until episode ends
     done = False
     while not done:
@@ -228,23 +281,31 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
             # Get predicted action
             action = agent.get_qs(current_state)
         else:
-            action = env.action_space.sample()
-            print(action)
-            # print('else')
+            # Get random action
+            r_action = env.action_space.sample()
+            # reshape random action to correct format
+            action = [r_action[0], r_action[1], r_action[2], r_action[3], round(r_action[4]).astype('int'), r_action[5],
+                      r_action[6]]
 
-        # action = agent.get_qs(current_state)
         # print('prediction: {}'.format(action))
 
-
         new_state, reward, done, _ = env.step(action)
+        # print('step: {} action: {} reward: {}'.format(step, action, reward))
 
         episode_reward += reward
 
+        # Every step update replay memory and train main network
+        agent.update_replay_memory((current_state, action, reward, new_state, done))
+        agent.train(done, step)
+
         current_state = new_state
+        step += 1
 
         sleep(0.05)
-    print('episode_reward: {}'.format(episode_reward))
 
+    # Append episode reward to a list and log stats (every given number of episodes)
+    episode_reward = round(episode_reward, 1)
+    print('episode: {} episode_reward: {}'.format(episode, episode_reward))
     ep_rewards.append(episode_reward)
 
     # Add episode reward to a list and log the stats (only for every n episodes)
@@ -257,7 +318,7 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
         if min_reward >= MIN_REWARD:
             now = datetime.now()
             now_format = now.strftime("%Y-%m-%dT%H-%M-%S")
-            agent.model.save(f'train_models/{agent.NAME}__{now_format}__{episode}episode__{max_reward:_>7.2f}max_{average_reward:_>7.2f}avg_{min_reward:_>7.2f}min__.model')
+            # agent.model.save(f'train_models/{agent.NAME}__{now_format}__{episode}episode__{max_reward:_>7.2f}max_{average_reward:_>7.2f}avg_{min_reward:_>7.2f}min__.h5')
 
     # Decay epsilon
     if epsilon > MIN_EPSILON:
