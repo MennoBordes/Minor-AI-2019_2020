@@ -15,13 +15,7 @@ def getParameters():
         "stateVariable": ["sim/cockpit2/controls/yoke_pitch_ratio", "sim/cockpit2/controls/yoke_roll_ratio",
                           "sim/cockpit2/controls/yoke_heading_ratio", "sim/flightmodel/position/alpha",
                           "sim/cockpit2/controls/wingsweep_ratio", "sim/cockpit2/controls/flap_ratio",
-                          "sim/flightmodel/position/groundspeed"],
-
-        # "sim/cockpit2/autopilot/gpss_status"
-        "rewardVariable": "sim/cockpit2/radios/indicators/gps_dme_distance_nm",
-        # ,"sim/cockpit2/radios/indicators/gps_dme_time_min",
-
-        "headingReward": "sim/cockpit2/radios/indicators/gps_bearing_deg_mag",
+                          "sim/flightmodel/position/indicated_airspeed"],
 
         # State variables values are stored in list sateVariableValue
         "stateVariableValue": [],
@@ -50,7 +44,6 @@ def getParameters():
     globalDictionary = dotdict(globalDictionary)  # make the dot notation for dictionary possible
 
     return globalDictionary
-
 
 class dotdict(dict):
     """dot.notation access to dictionary attributes"""
