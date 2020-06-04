@@ -134,7 +134,7 @@ class XplaneENV(gym.Env):
             if self.reached_goal(state):
                 reward += 500
                 self.ControlParameters.flag = True
-            return np.array(state), reward, self.ControlParameters.flag, self._get_info()
+            return np.array(state), round(reward, 1), self.ControlParameters.flag, self._get_info()
         except Exception as e:
             print("ERROR: {} \nText: {}".format(e.__class__, str(e)))
             return np.array([]), round(reward, 1), False, self._get_info()
@@ -220,14 +220,18 @@ class XplaneENV(gym.Env):
         Reset environment and prepare for new episode
         :return: Initial state of reset environment
         """
+
         # Reset xplane env
         XplaneENV.CLIENT.resetPlane()
-        reset_finished = False
 
+        reset_finished = False
+        plane_position = []
         # Wait until finished loading
         while not reset_finished:
             try:
+                # Try retrieving multiple datarefs
                 XplaneENV.CLIENT.getDREF("sim/test/test_float")
+                plane_position = XplaneENV.CLIENT.getPOSI()
                 reset_finished = True
             except:
                 print('Resetting environment...')
@@ -236,7 +240,7 @@ class XplaneENV(gym.Env):
         sleep(2)
 
         # XplaneENV.CLIENT.pauseSim(False)
-        plane_position = XplaneENV.CLIENT.getPOSI()
+        # plane_position = XplaneENV.CLIENT.getPOSI()
         self.start_position = plane_position
 
         # Reset time to 10:00 (32400.0)
