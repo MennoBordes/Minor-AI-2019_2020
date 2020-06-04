@@ -23,7 +23,8 @@ class XplaneENV(gym.Env):
         EnvSpace = envSpaces.xplane_space()
 
         self.ControlParameters = parameters.getParameters()
-        self.action_space = spaces.Box(np.array([-1, -1, -1, -1 / 4]), np.array([1, 1, 1, 1]))
+        # self.action_space = spaces.Box(np.array([-1, -1, -1, -1 / 4]), np.array([1, 1, 1, 1]))
+        self.action_space = spaces.Box(np.array([-1, -1, -1, -1, 0, 0, -0.5]), np.array([1, 1, 1, 1, 1, 1, 1.5]))
         # self.action_space = spaces.Dict({"Latitudinal_Stick": spaces.Box(low=-1, high=1, shape=()),
         #                                  "Longitudinal_Stick": spaces.Box(low=-1, high=1, shape=()),
         #                                  "Rudder_Pedals": spaces.Box(low=-1, high=1, shape=()),
@@ -104,12 +105,18 @@ class XplaneENV(gym.Env):
 
             # ******************************* Reward Parameters *********************************
             # Compare current position with previous position relative to the target
-            amount_closer = self.plane_closer_waypoint(self.previous_position,
-                                                       self.ControlParameters.stateAircraftPosition,
-                                                       self.waypoints[self.waypoint_goal])
-            if amount_closer:
-                reward += 0.01
-            # reward += (amount_closer * 0.01)
+            if self.closer_lat(self.previous_position, self.ControlParameters.stateAircraftPosition,
+                               self.waypoints[self.waypoint_goal]):
+                reward += 0.2
+
+            if self.closer_lon(self.previous_position, self.ControlParameters.stateAircraftPosition,
+                               self.waypoints[self.waypoint_goal]):
+                reward += 0.2
+
+            if self.closer_alt(self.previous_position, self.ControlParameters.stateAircraftPosition,
+                               self.waypoints[self.waypoint_goal]):
+                reward += 0.1
+
             # Update previous position to current position
             self.previous_position = self.ControlParameters.stateAircraftPosition
 
@@ -130,20 +137,36 @@ class XplaneENV(gym.Env):
             return np.array(state), reward, self.ControlParameters.flag, self._get_info()
         except Exception as e:
             print("ERROR: {} \nText: {}".format(e.__class__, str(e)))
-            return np.array([]), reward, False, self._get_info()
+            return np.array([]), round(reward, 1), False, self._get_info()
 
-    def plane_closer_waypoint(self, previous_pos, current_pos, target_waypoint):
-        lat_dist_prev = target_waypoint[0] - previous_pos[0]
-        lon_dist_prev = target_waypoint[1] - previous_pos[1]
-        alt_dist_prev = target_waypoint[2] - previous_pos[2]
-
-        lat_dist_cur = target_waypoint[0] - current_pos[0]
-        lon_dist_cur = target_waypoint[1] - current_pos[1]
-        alt_dist_cur = target_waypoint[2] - current_pos[2]
-
-        if (lat_dist_cur < lat_dist_prev) and (lon_dist_cur < lon_dist_prev):  # and (alt_dist_cur < alt_dist_prev):
+    def closer_lat(self, previous_pos, current_pos, target_waypoint):
+        # Get closest to target
+        temp_list = [previous_pos[0], current_pos[0]]
+        # Get the index  of the value closer to the target
+        index = temp_list.index(min(temp_list, key=lambda x: abs(x - target_waypoint[0])))
+        # If index = 1 then current position is closer than previous position
+        if index == 1:
             return True
+        return False
 
+    def closer_lon(self, previous_pos, current_pos, target_waypoint):
+        # Get closest to target
+        temp_list = [previous_pos[1], current_pos[1]]
+        # Get the index  of the value closer to the target
+        index = temp_list.index(min(temp_list, key=lambda x: abs(x - target_waypoint[1])))
+        # If index = 1 then current position is closer than previous position
+        if index == 1:
+            return True
+        return False
+
+    def closer_alt(self, previous_pos, current_pos, target_waypoint):
+        # Get closest to target
+        temp_list = [previous_pos[2], current_pos[2]]
+        # Get the index  of the value closer to the target
+        index = temp_list.index(min(temp_list, key=lambda x: abs(x - target_waypoint[2])))
+        # If index = 1 then current position is closer than previous position
+        if index == 1:
+            return True
         return False
 
     def has_crashed(self):
