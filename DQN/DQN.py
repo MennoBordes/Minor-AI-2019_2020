@@ -1,29 +1,42 @@
-# import tensorflow as tf
+import tensorflow as tf
+import argparse
+from time import sleep
+
 import numpy as np
 import random
 import os
 import gym
 import gym_xplane
 
-'''
-CWD = os.getcwd()
-# print(CWD)
+if __name__ == '__main__':
+    # SETUP ENVIRONMENT
+    env = gym.make('xplane-gym-v0')
 
+    # Create waypoints to target
+    env.remove_waypoints()
+    env.add_waypoints('Routes\EHAM_amsterdam_landing.json')
 
-class DQModel(tf.keras.Model):
-    def __init__(self, hidden_size: int, num_actions: int):
-        super(DQModel, self).__init__()
-        self.ml1 = tf.keras.layers.Input
+    # SEED environment
+    env.action_space.seed(0)
 
+    agent = RandomAgent(env.action_space)
 
-model = tf.keras.Sequential()
-model.add(tf.keras.layers.Dense(32, input_shape=(16,)))
-model.add(tf.keras.layers.Dense(32))
+    EPISODES = 5
+    episode = 0
 
-print(model)
-'''
+    for episode in range(EPISODES):
+        state = env.reset()
+        done = False
 
-env = gym.make('xplane-gym-v0')
-print(env)
-env.reset()
-env.close()
+        # itera = 0
+        # for itera in range(100):
+        #     print(itera)
+        while not done:
+            action = agent.act()
+            new_state, reward, done, _ = env.step(action)
+
+            print("State: ", state, "Reward: ", reward)
+            print("Done: ", done, "New state: ", new_state)
+
+            sleep(0.05)
+    env.close()
