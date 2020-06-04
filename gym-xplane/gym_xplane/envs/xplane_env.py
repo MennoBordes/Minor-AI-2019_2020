@@ -4,24 +4,21 @@ import numpy as np
 import gym_xplane.parameters as params
 import gym_xplane.envs.xpc as xpc
 from time import sleep, clock
-from gym import error, spaces, utils
-from gym.utils import seeding
-
-class Initial:
-    def connect(self, client_addr, xp_host, xp_port, client_port, timeout, max_steps):
-        return xpc.XPlaneConnect(client_addr, xp_host, xp_port, client_port, timeout, max_steps)
+from gym import spaces
+from scipy.spatial.distance import pdist
 
 class XplaneENV(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self):
+    def __init__(self, max_episode_steps=5000, test=False):
         self.value = "not yet implemented"
         self.action_space = spaces.Dict({"Latitudinal Stick": spaces.Box(low=-1, high=1, shape=()),
                                          "Longitudinal Stick": spaces.Box(low=-1, high=1, shape=()),
                                          "Rudder Pedals": spaces.Box(low=-1, high=1, shape=()),
                                          "Throttle": spaces.Box(low=-1, high=1, shape=()),
                                          "Flaps": spaces.Box(low=0, high=1, shape=()),
-                                         "Gear": spaces.Discrete(2)})
+                                         "Gear": spaces.Discrete(2),
+                                         "Speedbrakes": spaces.Box(low=-0.5, high=1.5, shape=())})
         self.observation_space = spaces.Dict({"Latitude":  spaces.Box(low=0, high=360, shape=()),
                                               "Longitude":  spaces.Box(low=0, high=360, shape=()),
                                               "Altitude":  spaces.Box(low=0, high=8500, shape=()),
@@ -37,16 +34,48 @@ class XplaneENV(gym.Env):
                                               "flap_ratio":  spaces.Box(low=-100, high=100, shape=()),
                                               "speed": spaces.Box(low=-2205, high=2205, shape=())})
         self.parameters = params.getParameters()
+        self.max_episode_steps = max_episode_steps
+        self.stateLength = 14
+        self.actions = [0, 0, 0, 0]
+        self.test = test
         self.waypoints = []
+        # Setup and test connection
+
         try:
-            self.client = xpc.XPlaneConnect(xpHost="192.168.0.1", xpPort=49000)
+            self.client = xpc.XPlaneConnect()
         except:
             print("connection error, check if xplane is running")
             raise Exception("connection error, check if xplane is running")
         print("I am client: ", self.client)
+
+        # Setup initial run
+        self.position = self.client.getPOSI(0)
+        self.start_position = self.position
+        self.start_state = self.getState()
+
         # Increase simulation speed
         self.client.sendDREF('sim/time/sim_speed', 500)
-        self.position = self.client.getPOSI()
+
+    def getState(self):
+        state =  self.client.getDREFs(self.parameters.stateVariable)
+        return state
+
+    def calcReward(self, target_position, current_position, sigma=0.45):
+        '''
+        input : target state (a list containing the target heading, altitude and runtime)
+                xplane_state(a list containing the aircraft heading , altitude at present timestep, and the running time)
+                Note: if the aircraft crashes then the run time is small, thus the running time captures crashes
+        output: Gaussian kernel similarîty between the two inputs. A value between 0 and 1
+        '''
+
+        data = np.array([target_position, current_position])
+
+        pairwise_dists = pdist(data, 'cosine')
+        # print('pairwise distance',pairwise_dists)
+        similarity = np.exp(-pairwise_dists ** 2 / sigma ** 2)
+
+        return pairwise_dists
+
 
     def step(self, actions):
         self.parameters.flag = False
@@ -55,55 +84,26 @@ class XplaneENV(gym.Env):
         actions_ = []
         margin = [3.5, 15]
 
+
         j = 0
         with xpc.XPlaneConnect() as client:
             try:
-                i = clock()
-                self.actions = actions
 
-                state1 = []
-                state2 = []
-
-                stateVariableTemp =client.getDREFs(self.parameters.stateVariable)
-                self.parameters.stateAircraftPosition = list(self.client.getPOSI())
-                self.parameters.stateVariableValue = [i[0] for i in stateVariableTemp]
-
-                state1 = self.parameters.stateAircraftPosition + self.parameters.stateVariableValue
-
-                # ******************************* Reward Parameters *********************************
-                rewardVector = client.getDREF(self.parameters.rewardVariable)[0]
-                # print(rewardVector)
-                # ***********************************************************************************
-
-                P = client.getDREF("sim/flightmodel/position/P")[0]
-                Q = client.getDREF("sim/flightmodel/position/Q")[0]
-                R = client.getDREF("sim/flightmodel/position/R")[0]
-                print("P", P, "Q", Q, "R", R)
-
-                return np.array(state2), reward, self.parameters.flag, self._get_info()
+                reward += self.calcReward()
             except:
                 print("except")
 
     def reset(self):
-        """
-        Reset environment and prepare for new episode
-        :return: Initial state of reset environment
-        """
+
         with xpc.XPlaneConnect() as client:
 
-            client.resetPlane()
-
-            return
-            # client.sendDREF("sim/operation/fix_all_systems", 1)
-            client.sendDREF("sim/cockpit/switches/gear_handle_status", 1)
-            client.sendDREF("sim/cockpit2/controls/gear_handle_down", 1)
+            # Repair aircraft
+            client.sendDREF("sim/operation/fix_all_systems", 1)
 
             # Reset position of the player aircraft
-            #       Lat               Lon                Alt            Pitch Roll Yaw Gear
-            posi = [52.3286247253418, 4.708916664123535, -0.315114825963974, 0, 0, 0, 1]
-            client.sendPOSI(posi)
+            client.sendPOSI(self.start_position)
 
-            # print("setting controls")
+            # set controls
             ctrl = [0.0, 0.0, 0.0, 0.0, 1, 0]
             client.sendCTRL(ctrl)
 
@@ -120,23 +120,16 @@ class XplaneENV(gym.Env):
             client.sendDATA(data)
             # Reset time to 10:00 (32400.0)
             client.sendDREF("sim/time/zulu_time_sec", 32400.0)
-            # Re-apply parking brake
-            client.sendDREF("sim/cockpit2/controls/parking_brake_ratio", 1)
             # Re-apply landing gear switch
-            client.sendDREF("sim/cockpit2/controls/gear_handle_down", 1)
+            client.sendDREF("sim/cockpit2/controls/gear_handle_down", 0)
 
             # print("Set camera")
-            client.sendVIEW(xpc.ViewType.Chase)
             sleep(1)
 
-        print("No RETURN implemented yet")
 
     def _get_info(self):
         """Returns a dictionary containing debug info."""
         return {"Control Parameters": self.parameters, "Actions": self.action_space}
-
-    def render(self, mode='human', close=False):
-        pass
 
     def add_waypoints(self, json_path):
         waypoints = []
