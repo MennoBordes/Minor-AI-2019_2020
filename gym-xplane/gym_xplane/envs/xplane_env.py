@@ -182,6 +182,12 @@ class XplaneENV(gym.Env):
         if wheel_crash:
             return True
 
+        # Check if the plane is on the ground
+        on_ground = round(XplaneENV.CLIENT.getDREF("sim/flightmodel/failures/onground_any")[0]) > 0
+
+        if on_ground:
+            return True
+
         # Possibility for other checks
 
         return False
