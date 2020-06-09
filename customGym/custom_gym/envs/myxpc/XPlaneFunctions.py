@@ -1,8 +1,8 @@
 from time import sleep
-import xplane.xpc as xpc
+from custom_gym.envs.myxpc import xpc2 as xpc
 
 
-def reset():
+def reset5():
     print("X-Plane Connect example script")
     print("Setting up simulation")
     with xpc.XPlaneConnect() as client:
@@ -19,48 +19,25 @@ def reset():
         # Set position of the player aircraft
         print("Setting position")
         #       Lat     Lon         Alt   Pitch Roll Yaw Gear
-        posi = [31.24562644958496, -109.62947082519531, 1276.0819091796875, -0.5395403504371643, -0.7556023001670837, 125.76551055908203, 1.0]
+        posi = [31.246, -109.63, 2000, 0, 0, 0, 0]
         client.sendPOSI(posi)
 
+
         # Set angle of attack, velocity, and orientation using the DATA command
-        # print("Setting orientation")
-        # data = [
-        #     [18, 0, -998, 0, -998, -998, -998, -998, -998],
-        #     [3, 130, 130, 130, 130, -998, -998, -998, -998],
-        #     [16, 0, 0, 0, -998, -998, -998, -998, -998]
-        #     ]
-        # client.sendDATA(data)
+        print("Setting orientation")
+        data = [ \
+            [18, 0, -998, 0, -998, -998, -998, -998, -998], \
+            [3, 130, 130, 130, 130, -998, -998, -998, -998], \
+            [16, 0, 0, 0, -998, -998, -998, -998, -998] \
+            ]
+        client.sendDATA(data)
 
         # Set control surfaces and throttle of the player aircraft using sendCTRL
         print("Setting controls")
         ctrl = [0.0, 0.0, 0.0, 0.8]
         client.sendCTRL(ctrl)
 
-        # Pause the sim
-        print("Pausing")
-        client.pauseSim(True)
-        sleep(2)
-
-        # Toggle pause state to resume
-        print("Resuming")
-        client.pauseSim(False)
-
-        # Stow landing gear using a dataref
-        print("Stowing gear")
-        gear_dref = "sim/cockpit/switches/gear_handle_status"
-        client.sendDREF(gear_dref, 0)
-
-        # Let the sim run for a bit.
-        sleep(4)
-
-        # Make sure gear was stowed successfully
-        gear_status = client.getDREF(gear_dref)
-        if gear_status[0] == 0:
-            print("Gear stowed")
-        else:
-            print("Error stowing gear")
-
-        print("End of Python client example")
+        client.sendDREF("sim/operation/quit", 1.0)
 
 def track_position():
     print("X-Plane Connect example script")
@@ -94,4 +71,4 @@ def send_waypoints():
         res = client.getPOSI(0)
         print(res)
 
-reset()
+
