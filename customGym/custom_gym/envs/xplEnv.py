@@ -4,7 +4,7 @@ from gym.utils import seeding
 from custom_gym.envs.myxpc.XPlaneFunctions import send_waypoints
 from custom_gym.envs.myxpc import xpc2 as xpc
 from custom_gym.envs.myxpc import keypress
-from custom_gym.envs.myxpc.keypress import ResetXPlane
+# from custom_gym.envs.myxpc.keypress import ResetXPlane
 import pygetwindow
 import pydirectinput
 import time
@@ -55,9 +55,9 @@ class XPL(gym.Env):
         xplane_window = pygetwindow.getWindowsWithTitle("X-System")[0]
         xplane_window.activate()
         time.sleep(4)
-        keypress.PressKey(0x19)
+        keypress.PressKey(0x50)
         time.sleep(1)
-        keypress.ReleaseKey(0x19)
+        keypress.ReleaseKey(0x50)
     
     def test_keystroke(self):
         keypress.PressKey(0x19)
@@ -71,8 +71,34 @@ class XPL(gym.Env):
         time.sleep(1)
         pydirectinput.keyUp('p')
 
-    def test_window3(self):
-        xplane_window = pygetwindow.getWindowsWithTitle("X-System")[0]
-        xplane_window.activate()
+    # def test_window3(self):
+    #     xplane_window = pygetwindow.getWindowsWithTitle("X-System")[0]
+    #     xplane_window.activate()
+    #     time.sleep(2)
+    #     ResetXPlane()
+
+    def test_rl(self):
+        rl_window = pygetwindow.getWindowsWithTitle("Rocket League (64-bit, DX11, Cooked)")[0]
+        rl_window.activate()
         time.sleep(2)
-        ResetXPlane()
+        keypress.PressKey(0x19)
+
+    def test_task(self):
+        task_window = pygetwindow.getWindowsWithTitle("Task Manager")[0]
+        task_window.activate()
+        time.sleep(2)
+        keypress.PressKey(0x01)
+    
+    def test_cs(self):
+        cs_window = pygetwindow.getWindowsWithTitle("Counter-Strike: Global Offensive")[0]
+        cs_window.activate()
+        time.sleep(2)
+        keypress.PressKey(0x19)
+    
+    def test_x(self):
+        x_window = pygetwindow.getWindowsWithTitle("X-System")[0]
+        x_window.activate()
+        time.sleep(2)
+        keypress.PressKey(0x19)
+        print(pygetwindow.getActiveWindowTitle())
+

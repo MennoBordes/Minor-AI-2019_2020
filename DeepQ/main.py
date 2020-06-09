@@ -6,8 +6,8 @@ gym_env = gym.make('custom_gym:Xplane-v0')
 # gym_env.reset()
 # gym_env.test_window()
 # gym_env.test_window()
-gym_env.test_window3()
-
+# gym_env.test_window()
+gym_env.test_x()
 # lr = 0.001c
 # gam = 0.99
 # n_games = 1000
