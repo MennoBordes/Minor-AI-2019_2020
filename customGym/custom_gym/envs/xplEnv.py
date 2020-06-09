@@ -6,7 +6,7 @@ from custom_gym.envs.myxpc import xpc2 as xpc
 from custom_gym.envs.myxpc import keypress
 # from custom_gym.envs.myxpc.keypress import ResetXPlane
 import pygetwindow
-import pydirectinput
+from pydirectinput import keyDown, keyUp
 import time
 
 
@@ -39,66 +39,22 @@ class XPL(gym.Env):
             client.sendDREF(simulation_dref, 1000)
             res = client.getDREF(simulation_dref)
             print(res)
-        # Reset airplane
-        xplane_window = pygetwindow.getWindowsWithTitle("X-System")
-        print(xplane_window)
+        # Selecting the current and XPlane window 
+        current_window = pygetwindow.getActiveWindow()
+        xplane_window = pygetwindow.getWindowsWithTitle("X-System")[0]
+        # Focuss on the Xplane window
+        xplane_window.activate()
+        
+        # Performing the reset command ctr+; on the focussed window
+        keyDown('ctrl')
+        keyDown(';')
+        keyUp('ctrl')
+        keyUp(';')
+        # Return to the old window I was on
+        current_window.activate()
 
     def render(self, mode="human"):
         print("render")
 
     def quit(self):
         print("quit")
-
-
-    def test_window(self):
-        
-        xplane_window = pygetwindow.getWindowsWithTitle("X-System")[0]
-        xplane_window.activate()
-        time.sleep(4)
-        keypress.PressKey(0x50)
-        time.sleep(1)
-        keypress.ReleaseKey(0x50)
-    
-    def test_keystroke(self):
-        keypress.PressKey(0x19)
-
-
-    def test_window2(self):
-        xplane_window = pygetwindow.getWindowsWithTitle("X-System")[0]
-        xplane_window.activate()
-        time.sleep(6)
-        pydirectinput.keyDown('p')
-        time.sleep(1)
-        pydirectinput.keyUp('p')
-
-    # def test_window3(self):
-    #     xplane_window = pygetwindow.getWindowsWithTitle("X-System")[0]
-    #     xplane_window.activate()
-    #     time.sleep(2)
-    #     ResetXPlane()
-
-    def test_rl(self):
-        rl_window = pygetwindow.getWindowsWithTitle("Rocket League (64-bit, DX11, Cooked)")[0]
-        rl_window.activate()
-        time.sleep(2)
-        keypress.PressKey(0x19)
-
-    def test_task(self):
-        task_window = pygetwindow.getWindowsWithTitle("Task Manager")[0]
-        task_window.activate()
-        time.sleep(2)
-        keypress.PressKey(0x01)
-    
-    def test_cs(self):
-        cs_window = pygetwindow.getWindowsWithTitle("Counter-Strike: Global Offensive")[0]
-        cs_window.activate()
-        time.sleep(2)
-        keypress.PressKey(0x19)
-    
-    def test_x(self):
-        x_window = pygetwindow.getWindowsWithTitle("X-System")[0]
-        x_window.activate()
-        time.sleep(2)
-        keypress.PressKey(0x19)
-        print(pygetwindow.getActiveWindowTitle())
-
