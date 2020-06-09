@@ -5,8 +5,8 @@ import numpy as np
 gym_env = gym.make('custom_gym:Xplane-v0')
 # gym_env.reset()
 # gym_env.test_window()
-gym_env.test_window2()
-# gym_env.test_keystroke()
+# gym_env.test_window()
+gym_env.test_window3()
 
 # lr = 0.001c
 # gam = 0.99

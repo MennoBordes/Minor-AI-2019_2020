@@ -55,12 +55,12 @@ class XPL(gym.Env):
         xplane_window = pygetwindow.getWindowsWithTitle("X-System")[0]
         xplane_window.activate()
         time.sleep(4)
-        keypress.PressKey(0x50)
+        keypress.PressKey(0x19)
         time.sleep(1)
-        keypress.ReleaseKey(0x50)
+        keypress.ReleaseKey(0x19)
     
     def test_keystroke(self):
-        keypress.PressKey(0x50)
+        keypress.PressKey(0x19)
 
 
     def test_window2(self):
