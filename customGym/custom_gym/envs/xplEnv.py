@@ -58,3 +58,9 @@ class XPL(gym.Env):
 
     def quit(self):
         print("quit")
+
+    def test_p(self):
+        xplane_window = pygetwindow.getWindowsWithTitle("X-System")[0]
+        xplane_window.activate()
+        keyDown('p')
+        keyUp('p')
