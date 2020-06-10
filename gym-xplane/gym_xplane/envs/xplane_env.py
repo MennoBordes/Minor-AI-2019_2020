@@ -275,7 +275,8 @@ class XplaneENV(gym.Env):
         state.extend(self.waypoints[self.waypoint_goal].tolist())
 
         XplaneENV.CLIENT.pauseSim(False)
-        return state
+        # return state
+        return np.array(state)
 
     def _get_info(self):
         """Returns a dictionary containing debug info."""

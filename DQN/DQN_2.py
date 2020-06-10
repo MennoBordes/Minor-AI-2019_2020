@@ -1,5 +1,3 @@
-import time
-
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Input, Dense, Flatten, Dropout, BatchNormalization
@@ -25,10 +23,10 @@ tf.config.experimental.set_memory_growth(physical_devices[0], True)
 DISCOUNT = 0.99
 REPLAY_MEMORY_SIZE = 50000
 MIN_REPLAY_MEMORY_SIZE = 100  # 100
-MINIBATCH_SIZE = 5  # 64
+MINIBATCH_SIZE = 32  # 64
 UPDATE_TARGET_EVERY = 5
 LEARNING_RATE = 0.01
-MIN_REWARD = -9000
+MIN_REWARD = -800
 
 WAYPOINT_FILE = 'Routes/flight_straight_1.json'
 WAYPOINT_START_LAND = False
@@ -52,20 +50,13 @@ env.add_waypoints(WAYPOINT_FILE, land_start=WAYPOINT_START_LAND)
 env.action_space.seed(0)
 
 
-class RandomAgent(object):
-    def __init__(self, action_space):
-        self.action_space = action_space
-
-    def act(self, state):
-        return self.action_space.sample()
-
-
 class ModifiedTensorBoard(TensorBoard):
     # Override init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.step = 1
         self.writer = tf.summary.create_file_writer(self.log_dir)
+        self._log_write_dir = self.log_dir
 
     def set_model(self, model):
         pass
@@ -74,6 +65,9 @@ class ModifiedTensorBoard(TensorBoard):
         self.update_stats(**logs)
 
     def on_batch_end(self, batch, logs=None):
+        pass
+
+    def on_train_end(self, logs=None):
         pass
 
     def update_stats(self, **stats):
@@ -104,15 +98,6 @@ class AI_Cruise:
         Creates a model
         :return: The created model
         """
-        # model = Sequential()
-        # print(env.observation_space)
-        # # model.add(Dense(10, input_shape=env.observation_space, activation='relu'))
-        #
-        # model.add(Dense(10, input_shape=(11,), activation='relu', name='input'))
-        # # model.add(Dense(15, activation='sigmoid', name='hidden'))
-        # model.add(Dense(7, activation='sigmoid', name='output'))
-        # model.compile(SGD(lr=LEARNING_RATE), 'binary_crossentropy', metrics=["accuracy"])
-        # # print(model.summary())
 
         print('*****************************************')
         print('*****************************************')
@@ -129,7 +114,7 @@ class AI_Cruise:
         # Create model
         model = tf.keras.Model(inputs=m_input, outputs=outputs, name="AI_CRUISE")
         model.compile(
-            optimizer=SGD(lr=LEARNING_RATE),
+            optimizer=Adam(lr=LEARNING_RATE),
             loss='binary_crossentropy'
         )
         print(model.summary())
@@ -171,8 +156,8 @@ class AI_Cruise:
         # print('new_current_states: {}'.format(new_current_states))
         # return
 
-        # future_qs_list = self.target_model.predict(new_current_states)
-        future_qs_list = self.get_qs(new_current_states, target_model=True)
+        future_qs_list = self.target_model.predict(new_current_states)
+        # future_qs_list = self.get_qs(new_current_states, target_model=True)
         # print("future_qs_list: {}".format(future_qs_list))
         # return
 
@@ -180,7 +165,6 @@ class AI_Cruise:
         y1 = []
         y2 = []
         y3 = []
-        y = []
 
         # Enumerate batches
         for index, (current_state, action, reward, new_current_state, done) in enumerate(minibatch):
@@ -196,16 +180,24 @@ class AI_Cruise:
             # current_qs = (current_qs_list[0][index], current_qs_list[1][index], current_qs_list[2][index])
             # print('current_qs: {} \nnew_q: {} action: {}'.format(current_qs, new_q, action))
             # current_qs[action] = new_q
-            print('current_qs_list: {}'.format(current_qs_list[0]))
+            # print('current_qs_list: {}'.format(current_qs_list[0]))
             X.append(current_state)
-            # y.append(current_qs)
             y1.append(current_qs_list[0][index])
             y2.append(current_qs_list[1][index])
             y3.append(current_qs_list[2][index])
-            y.append((current_qs_list[0][index], current_qs_list[1][index], current_qs_list[2][index]))
 
-        self.model.fit(np.array(X) / 255, np.array(y), batch_size=MINIBATCH_SIZE, verbose=0, shuffle=False)  #,
-                     #  callbacks=[self.tensorboard] if terminal_state else None)
+
+        self.model.fit(
+            {"input": np.array(X)/255},
+            {
+                "out_1": np.array(y1),
+                "out_2": np.array(y2),
+                "out_3": np.array(y3)
+            },
+            batch_size=MINIBATCH_SIZE,
+            verbose=0,
+            shuffle=False)  #,
+            # callbacks=[self.tensorboard] if terminal_state else None)
 
         # Update target network counter
         if terminal_state:
@@ -256,13 +248,11 @@ MIN_EPSILON = 0.001
 
 agent = AI_Cruise()
 
-agent2 = RandomAgent(env.action_space)
-
-ep_rewards = [-2000]
+ep_rewards = []
 
 AGGREGATE_STATS_EVERY = 2
 
-EPISODES = 5
+EPISODES = 50
 episode = 0
 
 # while episode < EPISODES:
@@ -283,10 +273,6 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
     # Reset flag and start iterating until episode ends
     done = False
     while not done:
-
-        # action = agent2.act(current_state)
-        # print('random: {}'.format(action))
-
         if np.random.random() > epsilon:
             # Get predicted action
             # action = agent.get_qs(current_state)
@@ -320,7 +306,7 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
 
     # Append episode reward to a list and log stats (every given number of episodes)
     episode_reward = round(episode_reward, 1)
-    print('episode: {} episode_reward: {}'.format(episode, episode_reward))
+    # print('\nepisode: {} episode_reward: {}\n'.format(episode, episode_reward))
     ep_rewards.append(episode_reward)
 
     # Add episode reward to a list and log the stats (only for every n episodes)
@@ -333,12 +319,17 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
         if min_reward >= MIN_REWARD:
             now = datetime.now()
             now_format = now.strftime("%Y-%m-%dT%H-%M-%S")
-            # agent.model.save(f'train_models/{agent.NAME}__{now_format}__{episode}episode__{max_reward:_>7.2f}max_{average_reward:_>7.2f}avg_{min_reward:_>7.2f}min__.h5')
+            agent.model.save(f'train_models/{agent.NAME}__{now_format}__{episode}episode__{max_reward:_>7.2f}max_{average_reward:_>7.2f}avg_{min_reward:_>7.2f}min__.h5')
 
     # Decay epsilon
     if epsilon > MIN_EPSILON:
         epsilon *= EPSILON_DECAY
         epsilon = max(MIN_EPSILON, epsilon)
+
+    print("\n")
+    for index, reward in enumerate(ep_rewards):
+        print('Episode: {} Reward: {}'.format(index, reward))
+    print("\n")
     # except Exception as e:
     #     print("Error: {} \nErrorValue: {}".format(e.__class__, str(e)))
 
