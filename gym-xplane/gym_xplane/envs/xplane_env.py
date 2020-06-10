@@ -79,7 +79,7 @@ class XplaneENV(gym.Env):
     def close(self):
         XplaneENV.CLIENT.close()
 
-    def step(self, actions):
+    def step(self, actions, AIType):
         self.ControlParameters.flag = False  # For synchronization during training
 
         reward = 0
@@ -120,24 +120,36 @@ class XplaneENV(gym.Env):
             # Update previous position to current position
             self.previous_position = self.ControlParameters.stateAircraftPosition
 
-            # Check if the plane has crashed
-            if self.has_crashed():
-                reward -= 1000
-                self.ControlParameters.flag = True
+            if AIType == AI_type.Cruise:
+                # Check altitude
+                if self.alt_low(self.ControlParameters.stateAircraftPosition):
+                    reward -= 0.5
 
-            # Check if the plane has reached the target waypoint
-            if self.reached_waypoint(state):
-                reward += 100
-                self.waypoint_goal += 1
+                # Check if the plane has crashed
+                if self.has_crashed():
+                    reward -= 1000
+                    self.ControlParameters.flag = True
 
-            # Check if the plane has reached the endpoint
-            if self.reached_goal(state):
-                reward += 500
-                self.ControlParameters.flag = True
+                # Check if the plane has reached the target waypoint
+                if self.reached_waypoint(state):
+                    reward += 100
+                    self.waypoint_goal += 1
+
+                # Check if the plane has reached the endpoint
+                if self.reached_goal(state):
+                    reward += 500
+                    self.ControlParameters.flag = True
             return np.array(state), round(reward, 1), self.ControlParameters.flag, self._get_info()
         except Exception as e:
             print("ERROR: {} \nText: {}".format(e.__class__, str(e)))
             return np.array([]), round(reward, 1), False, self._get_info()
+
+    def alt_low(self, current_pos):
+        """Checks if the current altitude is below a target"""
+        current_altitude = current_pos[2]
+        if current_altitude < 500:
+            return True
+        return False
 
     def closer_lat(self, previous_pos, current_pos, target_waypoint):
         # Get closest to target
@@ -307,3 +319,9 @@ class XplaneENV(gym.Env):
 
     def remove_waypoints(self):
         XplaneENV.CLIENT.sendWYPT(op=3, points=[])
+
+
+class AI_type(object):
+    TakeOff = 0
+    Cruise = 1
+    Landing = 2

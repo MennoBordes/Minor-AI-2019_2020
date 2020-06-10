@@ -16,6 +16,8 @@ import random
 import os
 import gym
 import gym_xplane
+from gym_xplane.envs.xplane_env import AI_type
+
 
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
@@ -301,9 +303,7 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
             action = [r_action[0], r_action[1], r_action[2], r_action[3], round(r_action[4]).astype('int'), r_action[5],
                       r_action[6]]
 
-        # print('prediction: {}'.format(action))
-
-        new_state, reward, done, _ = env.step(action)
+        new_state, reward, done, _ = env.step(action, AIType=AI_type.Cruise)
         # print('step: {} action: {} reward: {}'.format(step, action, reward))
 
         episode_reward += reward
