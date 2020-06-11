@@ -122,22 +122,22 @@ class XplaneENV(gym.Env):
 
             if AIType == AI_type.Cruise:
                 # Check altitude
-                    reward -= 0.5
                 if self.alt_anomaly(self.ControlParameters.stateAircraftPosition):
+                    reward -= 0.1
 
                 # Check if the plane has crashed
                 if self.has_crashed():
-                    reward -= 1000
+                    reward -= 100
                     self.ControlParameters.flag = True
 
                 # Check if the plane has reached the target waypoint
                 if self.reached_waypoint(state):
-                    reward += 100
+                    reward += 10
                     self.waypoint_goal += 1
 
                 # Check if the plane has reached the endpoint
                 if self.reached_goal(state):
-                    reward += 500
+                    reward += 50
                     self.ControlParameters.flag = True
             return np.array(state), round(reward, 1), self.ControlParameters.flag, self._get_info()
         except Exception as e:
