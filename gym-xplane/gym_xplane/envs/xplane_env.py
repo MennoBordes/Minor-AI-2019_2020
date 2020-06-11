@@ -206,10 +206,10 @@ class XplaneENV(gym.Env):
 
     def reached_waypoint(self, state):
         """Checks if the plane has reached the target waypoint"""
-        # rel_tot = the allowed difference between
-        close_latitude = math.isclose(state[0], self.waypoints[self.waypoint_goal][0], rel_tol=0.0009)
-        close_longitude = math.isclose(state[1], self.waypoints[self.waypoint_goal][1], rel_tol=0.0009)
-        close_altitude = math.isclose(state[2], self.waypoints[self.waypoint_goal][2], rel_tol=10)
+        # abs_tot = the allowed difference between
+        close_latitude = math.isclose(state[0], self.waypoints[self.waypoint_goal][0], abs_tol=0.0009)
+        close_longitude = math.isclose(state[1], self.waypoints[self.waypoint_goal][1], abs_tol=0.0009)
+        close_altitude = math.isclose(state[2], self.waypoints[self.waypoint_goal][2], abs_tol=10)
 
         if close_latitude & close_altitude & close_longitude:
             return True
@@ -218,9 +218,9 @@ class XplaneENV(gym.Env):
 
     def reached_goal(self, state):
         """Checks if the plane has reached the last waypoint"""
-        close_latitude = math.isclose(state[0], self.last_waypoints[0], rel_tol=0.0009)
-        close_longitude = math.isclose(state[1], self.last_waypoints[1], rel_tol=0.0009)
-        close_altitude = math.isclose(state[2], self.last_waypoints[2], rel_tol=10)
+        close_latitude = math.isclose(state[0], self.last_waypoints[0], abs_tol=0.0009)
+        close_longitude = math.isclose(state[1], self.last_waypoints[1], abs_tol=0.0009)
+        close_altitude = math.isclose(state[2], self.last_waypoints[2], abs_tol=10)
 
         if close_latitude & close_altitude & close_longitude:
             return True
