@@ -142,7 +142,7 @@ class XplaneENV(gym.Env):
             return np.array(state), round(reward, 1), self.ControlParameters.flag, self._get_info()
         except Exception as e:
             print(f"ERROR: {e.__class__} \nText: {str(e)}")
-            return np.array([]), round(reward, 1), False, self._get_info()
+            return np.array(self.observation_space.sample()), round(reward, 1), False, self._get_info()
 
     def alt_anomaly(self, current_pos):
         """Checks if the current altitude is below a target"""
