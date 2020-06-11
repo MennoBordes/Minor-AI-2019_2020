@@ -141,7 +141,7 @@ class XplaneENV(gym.Env):
                     self.ControlParameters.flag = True
             return np.array(state), round(reward, 1), self.ControlParameters.flag, self._get_info()
         except Exception as e:
-            print("ERROR: {} \nText: {}".format(e.__class__, str(e)))
+            print(f"ERROR: {e.__class__} \nText: {str(e)}")
             return np.array([]), round(reward, 1), False, self._get_info()
 
     def alt_low(self, current_pos):

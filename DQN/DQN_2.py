@@ -139,7 +139,7 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
         epsilon = max(MIN_EPSILON, epsilon)
 
     for index, reward in enumerate(ep_rewards):
-        print('Episode: {} Reward: {}'.format(index, reward))
+        print(f'Episode: {index} Reward: {reward}')
     # except Exception as e:
     #     print("Error: {} \nErrorValue: {}".format(e.__class__, str(e)))
 

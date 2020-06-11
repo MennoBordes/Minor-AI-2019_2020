@@ -51,7 +51,7 @@ class AI_Cruise:
         # Custom tensorboard object
         now = datetime.now()
         now_format = now.strftime("%Y-%m-%dT%H-%M-%S")
-        self.tensorboard = ModifiedTensorBoard(log_dir="logs/{}-{}".format(self.NAME, now_format))
+        self.tensorboard = ModifiedTensorBoard(log_dir=f"logs/{self.NAME}-{now_format}")
 
         self.target_update_counter = 0
 
