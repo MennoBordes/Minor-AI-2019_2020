@@ -15,6 +15,7 @@ import os
 import gym
 import gym_xplane
 from gym_xplane.envs.xplane_env import AI_type
+from ai_cruise import AI_Cruise
 
 
 physical_devices = tf.config.list_physical_devices('GPU')
@@ -50,203 +51,14 @@ env.add_waypoints(WAYPOINT_FILE, land_start=WAYPOINT_START_LAND)
 env.action_space.seed(0)
 
 
-class ModifiedTensorBoard(TensorBoard):
-    # Override init
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.step = 1
-        self.writer = tf.summary.create_file_writer(self.log_dir)
-        self._log_write_dir = self.log_dir
-
-    def set_model(self, model):
-        pass
-
-    def on_epoch_end(self, epoch, logs=None):
-        self.update_stats(**logs)
-
-    def on_batch_end(self, batch, logs=None):
-        pass
-
-    def on_train_end(self, logs=None):
-        pass
-
-    def update_stats(self, **stats):
-        self._write_logs(stats, self.step)
-
-
-class AI_Cruise:
-    def __init__(self):
-        # Main model
-        self.NAME = 'AI_CRUISE'
-        self.model = self.create_model()
-
-        # Target network
-        self.target_model = self.create_model()
-        self.target_model.set_weights(self.model.get_weights())
-
-        self.replay_memory = deque(maxlen=REPLAY_MEMORY_SIZE)
-
-        # Custom tensorboard object
-        now = datetime.now()
-        now_format = now.strftime("%Y-%m-%dT%H-%M-%S")
-        self.tensorboard = ModifiedTensorBoard(log_dir="logs/{}-{}".format(self.NAME, now_format))
-
-        self.target_update_counter = 0
-
-    def create_model(self):
-        """
-        Creates a model
-        :return: The created model
-        """
-
-        print('*****************************************')
-        print('*****************************************')
-        # Create input layer
-        m_input = tf.keras.layers.Input(shape=(11,), name='input')
-        # Create hidden layer
-        h_1 = tf.keras.layers.Dense(18, activation='relu', name='hidden')(m_input)
-        # Create multiple output layers
-        out_1 = tf.keras.layers.Dense(4, activation='sigmoid', name='out_1')(h_1)
-        out_2 = tf.keras.layers.Dense(1, activation='softmax', name='out_2')(h_1)
-        out_3 = tf.keras.layers.Dense(2, activation='sigmoid', name='out_3')(h_1)
-        # Create list of outputs
-        outputs = [out_1, out_2, out_3]
-        # Create model
-        model = tf.keras.Model(inputs=m_input, outputs=outputs, name="AI_CRUISE")
-        model.compile(
-            optimizer=Adam(lr=LEARNING_RATE),
-            loss='binary_crossentropy'
-        )
-        print(model.summary())
-
-        print('*****************************************')
-        print('*****************************************')
-
-        return model
-
-    def update_replay_memory(self, transition):
-        """
-        Adds the step data to a memory replay array
-        :param transition: (observation_space, action, reward, new_observation_spoce, done)
-        """
-        self.replay_memory.append(transition)
-
-    def train(self, terminal_state, step):
-        # Start training only if certain number of samples is already saved
-        if len(self.replay_memory) < MINIBATCH_SIZE:
-            return
-
-        # Get a minibatch of random samples from memory replay table
-        minibatch = random.sample(self.replay_memory, MINIBATCH_SIZE)
-        # print('minibatch: {}'.format(minibatch))
-        # return
-
-        # Get current states from minibatch, then query NN model for Q values
-        current_states = np.array([transition[0] for transition in minibatch]) / 255
-        # print('current_states: {}'.format(current_states))
-        # return
-        current_qs_list = self.model.predict(current_states)
-        # current_qs_list = self.get_qs(current_states)
-        # print('current_qs_list: {}'.format(current_qs_list))
-        # return
-
-        # Get future states from minibatch, then query NN model for Q values
-        # When using target network, query it, otherwise main network should be queried
-        new_current_states = np.array([transition[3] for transition in minibatch]) / 255
-        # print('new_current_states: {}'.format(new_current_states))
-        # return
-
-        future_qs_list = self.target_model.predict(new_current_states)
-        # future_qs_list = self.get_qs(new_current_states, target_model=True)
-        # print("future_qs_list: {}".format(future_qs_list))
-        # return
-
-        X = []
-        y1 = []
-        y2 = []
-        y3 = []
-
-        # Enumerate batches
-        for index, (current_state, action, reward, new_current_state, done) in enumerate(minibatch):
-            # if not done:
-            #     max_future_q = np.max(future_qs_list[index])
-            #     new_q = reward + DISCOUNT * max_future_qð
-            #     print('max_fut_q: {} \nnew_q: {}'.format(max_future_q, new_q))
-            #     return
-            # else:
-            #     new_q = reward
-
-            # current_qs = current_qs_list[index]
-            # current_qs = (current_qs_list[0][index], current_qs_list[1][index], current_qs_list[2][index])
-            # print('current_qs: {} \nnew_q: {} action: {}'.format(current_qs, new_q, action))
-            # current_qs[action] = new_q
-            # print('current_qs_list: {}'.format(current_qs_list[0]))
-            X.append(current_state)
-            y1.append(current_qs_list[0][index])
-            y2.append(current_qs_list[1][index])
-            y3.append(current_qs_list[2][index])
-
-
-        self.model.fit(
-            {"input": np.array(X)/255},
-            {
-                "out_1": np.array(y1),
-                "out_2": np.array(y2),
-                "out_3": np.array(y3)
-            },
-            batch_size=MINIBATCH_SIZE,
-            verbose=0,
-            shuffle=False)  #,
-            # callbacks=[self.tensorboard] if terminal_state else None)
-
-        # Update target network counter
-        if terminal_state:
-            self.target_update_counter += 1
-
-        # If counter reaches set value, update target network with weights of main network
-        if self.target_update_counter > UPDATE_TARGET_EVERY:
-            self.target_model.set_weights(self.model.get_weights())
-            self.target_update_counter = 0
-
-    def get_qs(self, state, target_model=False):
-        """
-        Get Q values given current observation space (environment state)
-        :param target_model: To be executed on the target model, default = False
-        :param state: The current observation state
-        :return: The predicted actions
-        """
-
-        state_array = np.array(state)
-        # print('state_array: {}'.format(state_array))
-        steering, gear, flaps = self.model.predict(state_array.reshape(-1, *state_array.shape)) \
-            if target_model \
-            else self.target_model.predict(state_array.reshape(-1, *state_array.shape))
-
-        # Convert landing gear from float to int
-        gear = gear.astype('int')
-        # print('steering: {}'.format(steering))
-        # print('gear: {}'.format(gear))
-        # print('flaps: {}'.format(flaps))
-
-        m_list = []
-        for l in steering[0]:
-            m_list.append(l)
-
-        for l in gear[0]:
-            m_list.append(l)
-
-        for l in flaps[0]:
-            m_list.append(l)
-
-        return m_list
-
-
-# Exploration settings
 epsilon = 1
 EPSILON_DECAY = 0.99975
 MIN_EPSILON = 0.001
 
-agent = AI_Cruise()
+agent = AI_Cruise(LEARNING_RATE=LEARNING_RATE,
+                  MINIBATCH_SIZE=MINIBATCH_SIZE,
+                  REPLAY_MEMORY_SIZE=REPLAY_MEMORY_SIZE,
+                  UPDATE_COUNTER=UPDATE_TARGET_EVERY)  # AI_Cruise()
 
 ep_rewards = []
 
@@ -326,10 +138,8 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
         epsilon *= EPSILON_DECAY
         epsilon = max(MIN_EPSILON, epsilon)
 
-    print("\n")
     for index, reward in enumerate(ep_rewards):
         print('Episode: {} Reward: {}'.format(index, reward))
-    print("\n")
     # except Exception as e:
     #     print("Error: {} \nErrorValue: {}".format(e.__class__, str(e)))
 
