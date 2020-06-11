@@ -122,8 +122,8 @@ class XplaneENV(gym.Env):
 
             if AIType == AI_type.Cruise:
                 # Check altitude
-                if self.alt_low(self.ControlParameters.stateAircraftPosition):
                     reward -= 0.5
+                if self.alt_anomaly(self.ControlParameters.stateAircraftPosition):
 
                 # Check if the plane has crashed
                 if self.has_crashed():
@@ -144,10 +144,10 @@ class XplaneENV(gym.Env):
             print(f"ERROR: {e.__class__} \nText: {str(e)}")
             return np.array([]), round(reward, 1), False, self._get_info()
 
-    def alt_low(self, current_pos):
+    def alt_anomaly(self, current_pos):
         """Checks if the current altitude is below a target"""
         current_altitude = current_pos[2]
-        if current_altitude < 500:
+        if current_altitude < 500 or current_altitude > 14_000:
             return True
         return False
 
