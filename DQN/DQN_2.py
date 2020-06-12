@@ -15,8 +15,10 @@ import os
 import gym
 import gym_xplane
 from gym_xplane.envs.xplane_env import AI_type
-from ai_cruise import AI_Cruise
+from current_training_model import current_training
 
+# Cruise model
+from ai_cruise import AI_Cruise
 
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
@@ -29,13 +31,37 @@ UPDATE_TARGET_EVERY = 5
 LEARNING_RATE = 0.01
 MIN_REWARD = -50
 
-# Waypoint files
-WAYPOINT_FILE = 'Routes/flight_straight_1.json'
-WAYPOINT_START_LAND = False
+# === Check which model is being trained
+# Waypoint and checkpoint files
+if current_training == AI_type.Cruise:
+    CURRENT_MODEL = AI_type.Cruise
+    WAYPOINT_FILE = 'Routes/flight_straight_1.json'
+    WAYPOINT_START_LAND = False
+    CHECKPOINT_PATH = 'training_2/cp-{date}.ckpt'
+    agent = AI_Cruise(LEARNING_RATE=LEARNING_RATE, DISCOUNT=DISCOUNT,
+                      MINIBATCH_SIZE=MINIBATCH_SIZE, REPLAY_MEMORY_SIZE=REPLAY_MEMORY_SIZE,
+                      UPDATE_COUNTER=UPDATE_TARGET_EVERY, checkpoint_path=CHECKPOINT_PATH)
 
-# Checkpoint files
-CHECKPOINT_PATH = 'training_2/cp-{date}.ckpt'
-# CHECKPOINT_DIR = os.path.dirname(CHECKPOINT_PATH)
+elif current_training == AI_type.Landing:
+    CURRENT_MODEL = AI_type.Landing
+    WAYPOINT_FILE = 'Routes/EHAM-LEVC_amsterdam-valencia.json'
+    WAYPOINT_START_LAND = False
+    CHECKPOINT_PATH = 'training_3/cp-{date}.ckpt'
+
+    #     TODO  UPDATE TO YOUR OWN MODEL
+    agent = AI_Cruise(LEARNING_RATE=LEARNING_RATE, DISCOUNT=DISCOUNT,
+                      MINIBATCH_SIZE=MINIBATCH_SIZE, REPLAY_MEMORY_SIZE=REPLAY_MEMORY_SIZE,
+                      UPDATE_COUNTER=UPDATE_TARGET_EVERY, checkpoint_path=CHECKPOINT_PATH)
+else:
+    CURRENT_MODEL = AI_type.TakeOff
+    WAYPOINT_FILE = 'Routes/EHAM-LEVC_amsterdam-valencia.json'
+    WAYPOINT_START_LAND = True
+    CHECKPOINT_PATH = 'training_4/cp-{date}.ckpt'
+
+    #     TODO  UPDATE TO YOUR OWN MODEL
+    agent = AI_Cruise(LEARNING_RATE=LEARNING_RATE, DISCOUNT=DISCOUNT,
+                      MINIBATCH_SIZE=MINIBATCH_SIZE, REPLAY_MEMORY_SIZE=REPLAY_MEMORY_SIZE,
+                      UPDATE_COUNTER=UPDATE_TARGET_EVERY, checkpoint_path=CHECKPOINT_PATH)
 
 # SETUP ENVIRONMENT
 parser = argparse.ArgumentParser()
@@ -53,12 +79,12 @@ env.remove_waypoints()
 env.add_waypoints(WAYPOINT_FILE, land_start=WAYPOINT_START_LAND)
 
 # SEED environment
-env.action_space.seed(0)
-
+# env.action_space.seed(0)
 
 epsilon = 1
 EPSILON_DECAY = 0.99975
 MIN_EPSILON = 0.001
+
 
 agent = AI_Cruise(LEARNING_RATE=LEARNING_RATE,
                   DISCOUNT=DISCOUNT,
@@ -100,7 +126,6 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
         done = False
         while not done:
             try:
-
                 if np.random.random() > epsilon:
                     # Get predicted action
                     # action = agent.get_qs(current_state)
@@ -118,19 +143,16 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
                     action = [r_action[0], r_action[1], r_action[2], r_action[3],
                               round(r_action[4]).astype('int'), r_action[5], r_action[6]]
 
-                new_state, reward, done, _ = env.step(action, AIType=AI_type.Cruise)
-                # print('step: {} action: {} reward: {}'.format(step, action, reward))
+                new_state, reward, done, _ = env.step(action, AIType=CURRENT_MODEL)
 
                 episode_reward += reward
 
                 # Every step update replay memory and train main network
-                # agent.update_replay_memory((current_state, action, reward, new_state, done))
                 agent.update_replay_memory((current_state, (steering, gear, flaps), reward, new_state, done))
                 agent.train(done, step)
 
                 current_state = new_state
                 step += 1
-                # print(f'reward: {reward}')
                 sleep(0.1)
             except Exception as e:
                 print(f'state: {new_state}')
