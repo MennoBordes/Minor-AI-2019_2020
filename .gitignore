@@ -141,3 +141,4 @@ dmypy.json
 /DQN/logs
 /DQN/training_1
 /DQN/training_2
+DQN/training_2/checkpoint
