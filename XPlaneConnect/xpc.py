@@ -9,7 +9,6 @@ class XPlaneConnect(object):
     # Basic Functions
     def __init__(self, xpHost='localhost', xpPort=49009, port=0, timeout=100):
         """Sets up a new connection to an X-Plane Connect plugin running in X-Plane.
-
             Args:
               xpHost: The hostname of the machine running X-Plane.
               xpPort: The port on which the XPC plugin is listening. Usually 49007.
@@ -72,7 +71,6 @@ class XPlaneConnect(object):
     # Configuration
     def setCONN(self, port):
         """Sets the port on which the client sends and receives data.
-
             Args:
               port: The new port to use.
         """
@@ -98,7 +96,6 @@ class XPlaneConnect(object):
 
     def pauseSim(self, pause):
         """Pauses or un-pauses the physics simulation engine in X-Plane.
-
             Args:
               pause: True to pause the simulation; False to resume.
         """
@@ -112,7 +109,6 @@ class XPlaneConnect(object):
     # X-Plane UDP Data
     def readDATA(self):
         """Reads X-Plane data.
-
             Returns: A 2 dimensional array containing 0 or more rows of data. Each array
               in the result will have 9 elements, the first of which is the row number which
               that array represents data for, and the rest of which are the data elements in
@@ -129,7 +125,6 @@ class XPlaneConnect(object):
 
     def sendDATA(self, data):
         """Sends X-Plane data over the underlying UDP socket.
-
             Args:
               data: An array of values representing data rows to be set. Each array in `data`
                 should have 9 elements, the first of which is a row number in the range (0-134),
@@ -148,7 +143,6 @@ class XPlaneConnect(object):
     # Position
     def getPOSI(self, ac=0):
         """Gets position information for the specified aircraft.
-
         Args:
           ac: The aircraft to get the position of. 0 is the main/player aircraft.
         """
@@ -170,7 +164,6 @@ class XPlaneConnect(object):
 
     def sendPOSI(self, values, ac=0):
         """Sets position information on the specified aircraft.
-
             Args:
               values: The position values to set. `values` is a array containing up to
                 7 elements. If less than 7 elements are specified or any elment is set to `-998`,
@@ -205,7 +198,6 @@ class XPlaneConnect(object):
     # Controls
     def getCTRL(self, ac=0):
         """Gets the control surface information for the specified aircraft.
-
         Args:
           ac: The aircraft to get the control surfaces of. 0 is the main/player aircraft.
         """
@@ -228,7 +220,6 @@ class XPlaneConnect(object):
 
     def sendCTRL(self, values, ac=0):
         """Sets control surface information on the specified aircraft.
-
             Args:
               values: The control surface values to set. `values` is a array containing up to
                 6 elements. If less than 6 elements are specified or any elment is set to `-998`,
@@ -271,7 +262,6 @@ class XPlaneConnect(object):
     # DREF Manipulation
     def sendDREF(self, dref, values):
         """Sets the specified dataref to the specified value.
-
             Args:
               dref: The name of the datarefs to set.
               values: Either a scalar value or a sequence of values.
@@ -280,7 +270,6 @@ class XPlaneConnect(object):
 
     def sendDREFs(self, drefs, values):
         """Sets the specified datarefs to the specified values.
-
             Args:
               drefs: A list of names of the datarefs to set.
               values: A list of scalar or vector values to set.
@@ -315,20 +304,16 @@ class XPlaneConnect(object):
 
     def getDREF(self, dref):
         """Gets the value of an X-Plane dataref.
-
             Args:
               dref: The name of the dataref to get.
-
             Returns: A sequence of data representing the values of the requested dataref.
         """
         return self.getDREFs([dref])[0]
 
     def getDREFs(self, drefs):
         """Gets the value of one or more X-Plane datarefs.
-
             Args:
               drefs: The names of the datarefs to get.
-
             Returns: A multidimensional sequence of data representing the values of the requested
              datarefs.
         """
@@ -356,7 +341,6 @@ class XPlaneConnect(object):
     # Drawing
     def sendTEXT(self, msg, x=-1, y=-1):
         """Sets a message that X-Plane will display on the screen.
-
             Args:
               msg: The string to display on the screen
               x: The distance in pixels from the left edge of the screen to display the
@@ -379,7 +363,6 @@ class XPlaneConnect(object):
 
     def sendVIEW(self, view):
         """Sets the camera view in X-Plane
-
             Args:
               view: The view to use. The ViewType class provides named constants
                     for known views.
@@ -399,7 +382,6 @@ class XPlaneConnect(object):
            above the Earth's surface that are represented visually in the simulator. Each
            point consists of a latitude and longitude expressed in fractional degrees and
            an altitude expressed as meters above sea level.
-
             Args:
               op: The operation to perform. Pass `1` to add waypoints,
                 `2` to remove waypoints, and `3` to clear all waypoints.

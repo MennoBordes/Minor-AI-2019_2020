@@ -14,6 +14,7 @@ class Initial:
         return xpc.XPlaneConnect(clientAddr, xpHost, xpPort, clientPort, timeout, max_episode_steps)
 
 
+
 class XplaneENV(gym.Env):
     metadata = {'render.modes': ['human']}
 
@@ -120,6 +121,21 @@ class XplaneENV(gym.Env):
             # Update previous position to current position
             self.previous_position = self.ControlParameters.stateAircraftPosition
 
+            if AIType == AI_type.Landing:
+                # Check if the plane has crashed
+                if self.has_crashed():
+                    reward -= 10000
+                    self.ControlParameters.flag = True
+
+                # Check if the plane has reached the endpoint
+                if self.has_landed(state):
+                    reward += 500
+                    self.ControlParameters.flag = True
+
+                if self.is_grounded():
+                    reward -= 100
+                    self.ControlParameters.flag = True
+                    
             if AIType == AI_type.Cruise:
                 # Check altitude
                 if self.alt_anomaly(self.ControlParameters.stateAircraftPosition):
@@ -238,6 +254,22 @@ class XplaneENV(gym.Env):
 
         return False
 
+    def is_grounded(self):
+        """Checks if the plane has gear down and has stopped moving"""
+
+        on_ground = round(XplaneENV.CLIENT.getDREF("sim/flightmodel/failures/onground_any")[0]) > 0
+        if on_ground:
+            return True
+
+        return False
+
+    def has_landed(self, state):
+        """Checks if the plane has reached the last waypoint, has gear down and has stopped moving"""
+        if self.reached_goal(state) & self.is_grounded():
+            return True
+
+        return False
+
     def reset(self):
         """
         Reset environment and prepare for new episode
@@ -331,7 +363,6 @@ class XplaneENV(gym.Env):
 
     def remove_waypoints(self):
         XplaneENV.CLIENT.sendWYPT(op=3, points=[])
-
 
 class AI_type(object):
     TakeOff = 0
