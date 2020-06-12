@@ -45,3 +45,22 @@ In the X-plane_instuctions folder are a couple of files that will be useful for 
 
 # 4. Currently active
 View the 'todo' file in the xplane folder for the following steps
+
+######
+# Branch: Menno
+######
+**Requirements**
+```
+Python == 3.7
+```
+ 
+**Install pip packages**
+```
+pip install tensorflow
+```
+
+## 1. Gym - XPlane environment
+`To install the gym x-plane environment go through the README file of the folder ` :
+[gym-xplane](https://github.com/Skillerde6de/Minor-AI-2019_2020/tree/Menno/gym-xplane)
+
+Then open the DQN/DQN.py file and run it.

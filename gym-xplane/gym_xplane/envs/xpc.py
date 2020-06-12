@@ -1,6 +1,8 @@
 import socket
 import struct
-
+from time import sleep
+import pygetwindow as gw
+import gym_xplane.keyPress as key
 
 class XPlaneConnect(object):
     """XPlaneConnect (XPC) facilitates communication to and from the XPCPlugin."""
@@ -60,7 +62,7 @@ class XPlaneConnect(object):
     def sendUDP(self, buffer):
         """Sends a message over the underlying UDP socket."""
         # Preconditions
-        if(len(buffer) == 0):
+        if len(buffer) == 0:
             raise ValueError("sendUDP: buffer is empty.")
 
         self.socket.sendto(buffer, 0, self.xpDst)
@@ -369,11 +371,10 @@ class XPlaneConnect(object):
         if y < -1:
             raise ValueError("y must be greater than or equal to -1.")
 
-        if msg == None:
+        if msg is None:
             msg = ""
 
         msgLen = len(msg)
-
         buffer = struct.pack(b"<4sxiiB" + (str(msgLen) + "s").encode(), b"TEXT", x, y, msgLen, msg.encode())
         self.sendUDP(buffer)
 
@@ -418,6 +419,15 @@ class XPlaneConnect(object):
         else:
             buffer = struct.pack(("<4sxBB" + str(len(points)) + "f").encode(), b"WYPT", op, len(points), *points)
         self.sendUDP(buffer)
+
+    def resetPlane(self):
+        current_window = gw.getWindowsWithTitle(gw.getActiveWindowTitle())[0]
+        xplane_window = gw.getWindowsWithTitle("X-System")[0]
+        xplane_window.activate()
+        key.ResetXPlane()
+        current_window.activate()
+        sleep(.5)
+        self.sendVIEW(ViewType.Chase)
 
 
 class ViewType(object):
