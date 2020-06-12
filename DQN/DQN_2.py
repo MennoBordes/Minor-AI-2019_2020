@@ -17,9 +17,12 @@ import gym_xplane
 from gym_xplane.envs.xplane_env import AI_type
 from ai_cruise import AI_Cruise
 
+try:
+    physical_devices = tf.config.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+except:
+    pass
 
-# physical_devices = tf.config.list_physical_devices('GPU')
-# tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 DISCOUNT = 0.99
 REPLAY_MEMORY_SIZE = 50000
@@ -30,7 +33,7 @@ LEARNING_RATE = 0.01
 MIN_REWARD = -50
 
 # Waypoint files
-WAYPOINT_FILE = 'Routes/flight_straight_1.json'
+WAYPOINT_FILE = 'DQN/Routes/flight_straight_1.json'
 WAYPOINT_START_LAND = False
 
 # Checkpoint files
