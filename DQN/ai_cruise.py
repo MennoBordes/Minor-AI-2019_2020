@@ -48,9 +48,11 @@ class AI_Cruise:
         self.checkpoint_dir = os.path.dirname(checkpoint_path)
 
         self.model = self.create_model()
-
-        latest_weights = tf.train.latest_checkpoint(self.checkpoint_dir)
-        self.model.load_weights(latest_weights)
+        try:
+            latest_weights = tf.train.latest_checkpoint(self.checkpoint_dir)
+            self.model.load_weights(latest_weights)
+        except:
+            pass
         # Target network
         self.target_model = self.create_model()
         self.target_model.set_weights(self.model.get_weights())
