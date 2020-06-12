@@ -442,14 +442,19 @@ class XPlaneConnect():
     def resetPlane(self):
         current_window = gw.getWindowsWithTitle(gw.getActiveWindowTitle())[0]
         xplane_window = gw.getWindowsWithTitle("X-System")[0]
+        sleep(0.01)
         xplane_window.activate()
+        sleep(0.01)
         key.ResetXPlane()
+        sleep(0.01)
         current_window.activate()
 
         # Re-apply landing gear switch
         self.sendDREF("sim/cockpit2/controls/gear_handle_down", 1)
         self.sendDREF("sim/cockpit/switches/gear_handle_status", 1)
         self.sendDREF("sim/cockpit2/controls/parking_brake_ratio", 0)
+        # Reset time to 10:00 (32400.0)
+        self.sendDREF("sim/time/zulu_time/sec", 32400.0)
         sleep(1)
         self.sendVIEW(ViewType.Chase)
         self.pauseSim(False)
