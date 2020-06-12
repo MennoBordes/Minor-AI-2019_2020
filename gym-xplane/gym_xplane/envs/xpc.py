@@ -1,6 +1,9 @@
 import socket
 import struct
-
+import select
+from time import sleep
+import pygetwindow as gw
+import gym_xplane.keyPress as key
 
 class XPlaneConnect(object):
     """XPlaneConnect (XPC) facilitates communication to and from the XPCPlugin."""
@@ -401,6 +404,21 @@ class XPlaneConnect(object):
         else:
             buffer = struct.pack(("<4sxBB" + str(len(points)) + "f").encode(), b"WYPT", op, len(points), *points)
         self.sendUDP(buffer)
+
+    def resetPlane(self):
+        current_window = gw.getWindowsWithTitle(gw.getActiveWindowTitle())[0]
+        xplane_window = gw.getWindowsWithTitle("X-System")[0]
+        xplane_window.activate()
+        key.ResetXPlane()
+        current_window.activate()
+
+        # Re-apply landing gear switch
+        self.sendDREF("sim/cockpit2/controls/gear_handle_down", 1)
+        self.sendDREF("sim/cockpit/switches/gear_handle_status", 1)
+        self.sendDREF("sim/cockpit2/controls/parking_brake_ratio", 0)
+        sleep(1)
+        self.sendVIEW(ViewType.Chase)
+        self.pauseSim(False)
 
 
 class ViewType(object):
