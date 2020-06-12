@@ -1,10 +1,8 @@
 import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
-from custom_gym.envs.myxpc.XPlaneFunctions import send_waypoints
 from custom_gym.envs.myxpc import xpc2 as xpc
-from custom_gym.envs.myxpc import keypress
-# from custom_gym.envs.myxpc.keypress import ResetXPlane
+from custom_gym.envs.myxpc.xplane_functions import get_waypoints
 import pygetwindow
 from pydirectinput import keyDown, keyUp
 import time
@@ -20,7 +18,7 @@ class XPL(gym.Env):
         print("step")
 
     def reward(self):
-        print("reward")
+        get_waypoints()
     def reset(self):
         print("reset")
         # Set simulation speed for faster training
@@ -64,3 +62,5 @@ class XPL(gym.Env):
         xplane_window.activate()
         keyDown('p')
         keyUp('p')
+    
+    

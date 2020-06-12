@@ -25,5 +25,5 @@ for i in range(n_games):
     eps_hist.append(agent.epsilon)
     scores.append(score)
     
-
+gym_env.reward()
 
