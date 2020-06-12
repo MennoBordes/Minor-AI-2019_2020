@@ -25,6 +25,7 @@ class XplaneENV(gym.Env):
         self.ControlParameters = parameters.getParameters()
         # self.action_space = spaces.Box(np.array([-1, -1, -1, -1 / 4]), np.array([1, 1, 1, 1]))
         self.action_space = spaces.Box(np.array([-1, -1, -1, -1, 0, 0, -0.5]), np.array([1, 1, 1, 1, 1, 1, 1.5]))
+        # self.action_space = spaces.Box(np.array([0, 0, 0, 0, 0, 0, -0.5]), np.array([1, 1, 1, 1, 1, 1, 1.5]))
         # self.action_space = spaces.Dict({"Latitudinal_Stick": spaces.Box(low=-1, high=1, shape=()),
         #                                  "Longitudinal_Stick": spaces.Box(low=-1, high=1, shape=()),
         #                                  "Rudder_Pedals": spaces.Box(low=-1, high=1, shape=()),
@@ -92,9 +93,8 @@ class XplaneENV(gym.Env):
             state = []
 
             self.ControlParameters.stateAircraftPosition = list(XplaneENV.CLIENT.getPOSI())
-            # print("planePosition: {}".format(self.ControlParameters.stateAircraftPosition))
-            state = self.ControlParameters.stateAircraftPosition  # + self.waypoints[self.waypoint_goal]
-            # print(state)
+            state = self.ControlParameters.stateAircraftPosition
+
             # Add planeSpeed to state
             planeSpeed = XplaneENV.CLIENT.getDREF(self.ControlParameters.aircraftSpeed)
             state.append(planeSpeed[0])
@@ -107,15 +107,15 @@ class XplaneENV(gym.Env):
             # Compare current position with previous position relative to the target
             if self.closer_lat(self.previous_position, self.ControlParameters.stateAircraftPosition,
                                self.waypoints[self.waypoint_goal]):
-                reward += 0.2
+                reward += 0.4
 
             if self.closer_lon(self.previous_position, self.ControlParameters.stateAircraftPosition,
                                self.waypoints[self.waypoint_goal]):
-                reward += 0.2
+                reward += 0.4
 
             if self.closer_alt(self.previous_position, self.ControlParameters.stateAircraftPosition,
                                self.waypoints[self.waypoint_goal]):
-                reward += 0.1
+                reward += 0.2
 
             # Update previous position to current position
             self.previous_position = self.ControlParameters.stateAircraftPosition
@@ -123,7 +123,12 @@ class XplaneENV(gym.Env):
             if AIType == AI_type.Cruise:
                 # Check altitude
                 if self.alt_anomaly(self.ControlParameters.stateAircraftPosition):
-                    reward -= 0.1
+                    reward -= 0.3
+
+                # Check altitude V2
+                if self.alt_low(self.ControlParameters.stateAircraftPosition):
+                    reward -= 50
+                    self.ControlParameters.flag = True
 
                 # Check if the plane has crashed
                 if self.has_crashed():
@@ -144,8 +149,14 @@ class XplaneENV(gym.Env):
             print(f"ERROR: {e.__class__} \nText: {str(e)}")
             return np.array(self.observation_space.sample()), round(reward, 1), False, self._get_info()
 
+    def alt_low(self, current_pos):
+        current_altitude = current_pos[2]
+        if current_altitude < 250 or current_altitude > 15_000:
+            return True
+        return False
+
     def alt_anomaly(self, current_pos):
-        """Checks if the current altitude is below a target"""
+        """Checks if the current altitude is outside a target"""
         current_altitude = current_pos[2]
         if current_altitude < 500 or current_altitude > 14_000:
             return True
