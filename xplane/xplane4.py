@@ -154,7 +154,17 @@ def ex3():
         f.close()
 
 
+def ex4():
+    with xpc.XPlaneConnect() as client:
+        print("testing connection")
+        print(client.getDREF("sim/test/test_float"))
+        print("Getting current plane position")
+        position = client.getPOSI(0)
+        print(position)
+
+
 if __name__ == "__main__":
     # ex()
     # ex2()
-    ex3()
+    # ex3()
+    ex4()

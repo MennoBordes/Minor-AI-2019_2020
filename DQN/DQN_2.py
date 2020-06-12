@@ -15,7 +15,7 @@ import os
 import gym
 import gym_xplane
 from gym_xplane.envs.xplane_env import AI_type
-from current_training_model import current_training
+from DQN.current_training_model import current_training
 
 # Cruise model
 from ai_cruise import AI_Cruise
@@ -51,12 +51,12 @@ elif current_training == AI_type.Landing:
     CHECKPOINT_PATH = 'training_3/cp-{date}.ckpt'
 
     #     TODO  UPDATE TO YOUR OWN MODEL
-    agent = AI_Cruise(LEARNING_RATE=LEARNING_RATE, DISCOUNT=DISCOUNT,
+    agent = AI_Landing(LEARNING_RATE=LEARNING_RATE, DISCOUNT=DISCOUNT,
                       MINIBATCH_SIZE=MINIBATCH_SIZE, REPLAY_MEMORY_SIZE=REPLAY_MEMORY_SIZE,
                       UPDATE_COUNTER=UPDATE_TARGET_EVERY, checkpoint_path=CHECKPOINT_PATH)
 else:
     CURRENT_MODEL = AI_type.TakeOff
-    WAYPOINT_FILE = 'Routes/EHAM-LEVC_amsterdam-valencia.json'
+    WAYPOINT_FILE = 'DQN\Routes\EHAM_amsterdam_approach.json'
     WAYPOINT_START_LAND = True
     CHECKPOINT_PATH = 'training_4/cp-{date}.ckpt'
 
@@ -86,14 +86,6 @@ env.add_waypoints(WAYPOINT_FILE, land_start=WAYPOINT_START_LAND)
 epsilon = 1
 EPSILON_DECAY = 0.99975
 MIN_EPSILON = 0.001
-
-
-agent = AI_Cruise(LEARNING_RATE=LEARNING_RATE,
-                  DISCOUNT=DISCOUNT,
-                  MINIBATCH_SIZE=MINIBATCH_SIZE,
-                  REPLAY_MEMORY_SIZE=REPLAY_MEMORY_SIZE,
-                  UPDATE_COUNTER=UPDATE_TARGET_EVERY,
-                  checkpoint_path=CHECKPOINT_PATH)
 
 # Load existing weights
 # latest_weights = tf.train.latest_checkpoint(CHECKPOINT_DIR)

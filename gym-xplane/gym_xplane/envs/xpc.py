@@ -1,5 +1,9 @@
 import socket
 import struct
+<<<<<<< HEAD
+=======
+import select
+>>>>>>> Felix
 from time import sleep
 import pygetwindow as gw
 import gym_xplane.keyPress as key
@@ -11,7 +15,10 @@ class XPlaneConnect(object):
     # Basic Functions
     def __init__(self, xpHost='localhost', xpPort=49009, port=0, timeout=100):
         """Sets up a new connection to an X-Plane Connect plugin running in X-Plane.
+<<<<<<< HEAD
 
+=======
+>>>>>>> Felix
             Args:
               xpHost: The hostname of the machine running X-Plane.
               xpPort: The port on which the XPC plugin is listening. Usually 49007.
@@ -62,7 +69,11 @@ class XPlaneConnect(object):
     def sendUDP(self, buffer):
         """Sends a message over the underlying UDP socket."""
         # Preconditions
+<<<<<<< HEAD
         if len(buffer) == 0:
+=======
+        if(len(buffer) == 0):
+>>>>>>> Felix
             raise ValueError("sendUDP: buffer is empty.")
 
         self.socket.sendto(buffer, 0, self.xpDst)
@@ -74,7 +85,10 @@ class XPlaneConnect(object):
     # Configuration
     def setCONN(self, port):
         """Sets the port on which the client sends and receives data.
+<<<<<<< HEAD
 
+=======
+>>>>>>> Felix
             Args:
               port: The new port to use.
         """
@@ -100,7 +114,10 @@ class XPlaneConnect(object):
 
     def pauseSim(self, pause):
         """Pauses or un-pauses the physics simulation engine in X-Plane.
+<<<<<<< HEAD
 
+=======
+>>>>>>> Felix
             Args:
               pause: True to pause the simulation; False to resume.
         """
@@ -114,7 +131,10 @@ class XPlaneConnect(object):
     # X-Plane UDP Data
     def readDATA(self):
         """Reads X-Plane data.
+<<<<<<< HEAD
 
+=======
+>>>>>>> Felix
             Returns: A 2 dimensional array containing 0 or more rows of data. Each array
               in the result will have 9 elements, the first of which is the row number which
               that array represents data for, and the rest of which are the data elements in
@@ -131,7 +151,10 @@ class XPlaneConnect(object):
 
     def sendDATA(self, data):
         """Sends X-Plane data over the underlying UDP socket.
+<<<<<<< HEAD
 
+=======
+>>>>>>> Felix
             Args:
               data: An array of values representing data rows to be set. Each array in `data`
                 should have 9 elements, the first of which is a row number in the range (0-134),
@@ -150,7 +173,10 @@ class XPlaneConnect(object):
     # Position
     def getPOSI(self, ac=0):
         """Gets position information for the specified aircraft.
+<<<<<<< HEAD
 
+=======
+>>>>>>> Felix
         Args:
           ac: The aircraft to get the position of. 0 is the main/player aircraft.
         """
@@ -172,7 +198,10 @@ class XPlaneConnect(object):
 
     def sendPOSI(self, values, ac=0):
         """Sets position information on the specified aircraft.
+<<<<<<< HEAD
 
+=======
+>>>>>>> Felix
             Args:
               values: The position values to set. `values` is a array containing up to
                 7 elements. If less than 7 elements are specified or any elment is set to `-998`,
@@ -207,7 +236,10 @@ class XPlaneConnect(object):
     # Controls
     def getCTRL(self, ac=0):
         """Gets the control surface information for the specified aircraft.
+<<<<<<< HEAD
 
+=======
+>>>>>>> Felix
         Args:
           ac: The aircraft to get the control surfaces of. 0 is the main/player aircraft.
         """
@@ -230,7 +262,10 @@ class XPlaneConnect(object):
 
     def sendCTRL(self, values, ac=0):
         """Sets control surface information on the specified aircraft.
+<<<<<<< HEAD
 
+=======
+>>>>>>> Felix
             Args:
               values: The control surface values to set. `values` is a array containing up to
                 6 elements. If less than 6 elements are specified or any elment is set to `-998`,
@@ -273,7 +308,10 @@ class XPlaneConnect(object):
     # DREF Manipulation
     def sendDREF(self, dref, values):
         """Sets the specified dataref to the specified value.
+<<<<<<< HEAD
 
+=======
+>>>>>>> Felix
             Args:
               dref: The name of the datarefs to set.
               values: Either a scalar value or a sequence of values.
@@ -282,7 +320,10 @@ class XPlaneConnect(object):
 
     def sendDREFs(self, drefs, values):
         """Sets the specified datarefs to the specified values.
+<<<<<<< HEAD
 
+=======
+>>>>>>> Felix
             Args:
               drefs: A list of names of the datarefs to set.
               values: A list of scalar or vector values to set.
@@ -317,20 +358,30 @@ class XPlaneConnect(object):
 
     def getDREF(self, dref):
         """Gets the value of an X-Plane dataref.
+<<<<<<< HEAD
 
             Args:
               dref: The name of the dataref to get.
 
+=======
+            Args:
+              dref: The name of the dataref to get.
+>>>>>>> Felix
             Returns: A sequence of data representing the values of the requested dataref.
         """
         return self.getDREFs([dref])[0]
 
     def getDREFs(self, drefs):
         """Gets the value of one or more X-Plane datarefs.
+<<<<<<< HEAD
 
             Args:
               drefs: The names of the datarefs to get.
 
+=======
+            Args:
+              drefs: The names of the datarefs to get.
+>>>>>>> Felix
             Returns: A multidimensional sequence of data representing the values of the requested
              datarefs.
         """
@@ -358,7 +409,10 @@ class XPlaneConnect(object):
     # Drawing
     def sendTEXT(self, msg, x=-1, y=-1):
         """Sets a message that X-Plane will display on the screen.
+<<<<<<< HEAD
 
+=======
+>>>>>>> Felix
             Args:
               msg: The string to display on the screen
               x: The distance in pixels from the left edge of the screen to display the
@@ -371,16 +425,28 @@ class XPlaneConnect(object):
         if y < -1:
             raise ValueError("y must be greater than or equal to -1.")
 
+<<<<<<< HEAD
         if msg is None:
             msg = ""
 
         msgLen = len(msg)
+=======
+        if msg == None:
+            msg = ""
+
+        msgLen = len(msg)
+
+        # TODO: Multiple byte conversions
+>>>>>>> Felix
         buffer = struct.pack(b"<4sxiiB" + (str(msgLen) + "s").encode(), b"TEXT", x, y, msgLen, msg.encode())
         self.sendUDP(buffer)
 
     def sendVIEW(self, view):
         """Sets the camera view in X-Plane
+<<<<<<< HEAD
 
+=======
+>>>>>>> Felix
             Args:
               view: The view to use. The ViewType class provides named constants
                     for known views.
@@ -400,7 +466,10 @@ class XPlaneConnect(object):
            above the Earth's surface that are represented visually in the simulator. Each
            point consists of a latitude and longitude expressed in fractional degrees and
            an altitude expressed as meters above sea level.
+<<<<<<< HEAD
 
+=======
+>>>>>>> Felix
             Args:
               op: The operation to perform. Pass `1` to add waypoints,
                 `2` to remove waypoints, and `3` to clear all waypoints.
@@ -426,8 +495,19 @@ class XPlaneConnect(object):
         xplane_window.activate()
         key.ResetXPlane()
         current_window.activate()
+<<<<<<< HEAD
         sleep(.5)
         self.sendVIEW(ViewType.Chase)
+=======
+
+        # Re-apply landing gear switch
+        self.sendDREF("sim/cockpit2/controls/gear_handle_down", 1)
+        self.sendDREF("sim/cockpit/switches/gear_handle_status", 1)
+        self.sendDREF("sim/cockpit2/controls/parking_brake_ratio", 0)
+        sleep(1)
+        self.sendVIEW(ViewType.Chase)
+        self.pauseSim(False)
+>>>>>>> Felix
 
 
 class ViewType(object):
@@ -443,4 +523,8 @@ class ViewType(object):
     FollowWithPanel = 82
     Spot = 83
     FullscreenWithHud = 84
+<<<<<<< HEAD
     FullscreenNoHud = 85
+=======
+    FullscreenNoHud = 85
+>>>>>>> Felix
