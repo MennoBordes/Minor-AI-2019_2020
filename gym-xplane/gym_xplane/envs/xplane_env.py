@@ -61,7 +61,7 @@ class XplaneENV(gym.Env):
     def close(self):
         XplaneENV.CLIENT.close()
 
-    def step(self, actions):
+    def step(self, actions, AIType):
         self.ControlParameters.flag = False  # For synchronization during training
 
         reward = 0
@@ -87,49 +87,64 @@ class XplaneENV(gym.Env):
 
             # ******************************* Reward Parameters *********************************
             # Compare current position with previous position relative to the target
-            amount_closer = self.plane_closer_waypoint(self.previous_position,
+            dX = self.delta_x(self.previous_position,
                                                        self.ControlParameters.stateAircraftPosition,
                                                        self.waypoints[self.waypoint_goal])
-            if amount_closer < 0:
-                print("closer")
+            if dX < 0:
                 reward += 0.01
-            # reward += (amount_closer * 0.01)
+
+            dY = self.delta_y(self.previous_position,
+                              self.ControlParameters.stateAircraftPosition,
+                              self.waypoints[self.waypoint_goal])
+            if dY < 0:
+                reward += 0.01
+
+            dZ = self.delta_z(self.previous_position,
+                              self.ControlParameters.stateAircraftPosition,
+                              self.waypoints[self.waypoint_goal])
+            if dZ < 0:
+                reward += 0.01
+
             # Update previous position to current position
             self.previous_position = self.ControlParameters.stateAircraftPosition
 
-            # Check if the plane has crashed
-            if self.has_crashed():
-                reward -= 1000
-                self.ControlParameters.flag = True
+            if AIType == AI_type.Landing:
+                # Check if the plane has crashed
+                if self.has_crashed():
+                    reward -= 10000
+                    self.ControlParameters.flag = True
 
-            # Check if the plane has reached the endpoint
-            if self.has_landed(state):
-                reward += 500
-                self.ControlParameters.flag = True
+                # Check if the plane has reached the endpoint
+                if self.has_landed(state):
+                    reward += 500
+                    self.ControlParameters.flag = True
 
-            if self.is_grounded():
-                reward -= 100
-                self.ControlParameters.flag = True
-
-            print("reward: ", reward)
-
+                if self.is_grounded():
+                    reward -= 100
+                    self.ControlParameters.flag = True
             return np.array(state), reward, self.ControlParameters.flag, self._get_info()
         except Exception as e:
             print("ERROR: {} \nText: {}".format(e.__class__, str(e)))
             return np.array([]), reward, False, self._get_info()
 
-    def plane_closer_waypoint(self, previous_pos, current_pos, target_waypoint):
-        lat_dist_prev = abs(target_waypoint[0] - previous_pos[0])
+    def delta_x(self, previous_pos, current_pos, target_waypoint):
         lon_dist_prev = abs(target_waypoint[1] - previous_pos[1])
+
+        lon_dist_cur = abs(target_waypoint[1] - current_pos[1])
+
+        return (lon_dist_cur - lon_dist_prev)
+    def delta_y(self, previous_pos, current_pos, target_waypoint):
         alt_dist_prev = abs(target_waypoint[2] - previous_pos[2])
 
-        lat_dist_cur = abs(target_waypoint[0] - current_pos[0])
-        lon_dist_cur = abs(target_waypoint[1] - current_pos[1])
         alt_dist_cur = abs(target_waypoint[2] - current_pos[2])
 
-        dist = (lat_dist_cur - lat_dist_prev) + (lon_dist_cur - lon_dist_prev) + (alt_dist_cur - alt_dist_prev)
-        return dist
+        return (alt_dist_cur - alt_dist_prev)
+    def delta_z(self, previous_pos, current_pos, target_waypoint):
+        lat_dist_prev = abs(target_waypoint[0] - previous_pos[0])
 
+        lat_dist_cur = abs(target_waypoint[0] - current_pos[0])
+
+        return (lat_dist_cur - lat_dist_prev)
     def has_crashed(self):
         # Check if wheels are blown
         wheel_value = []
@@ -284,3 +299,8 @@ class XplaneENV(gym.Env):
 
     def remove_waypoints(self):
         XplaneENV.CLIENT.sendWYPT(op=3, points=[])
+
+class AI_type(object):
+    TakeOff = 0
+    Cruise = 1
+    Landing = 2

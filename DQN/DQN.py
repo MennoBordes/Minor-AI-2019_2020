@@ -1,5 +1,3 @@
-import time
-
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Input, Dense, Flatten, Dropout, BatchNormalization
@@ -10,6 +8,7 @@ from time import sleep
 from datetime import datetime
 from tqdm import tqdm
 from tensorflow.keras.callbacks import TensorBoard
+from gym_xplane.envs.xplane_env import AI_type
 
 import numpy as np
 import random
@@ -57,6 +56,7 @@ class ModifiedTensorBoard(TensorBoard):
         super().__init__(**kwargs)
         self.step = 1
         self.writer = tf.summary.create_file_writer(self.log_dir)
+        self._log_write_dir = self.log_dir
 
     def set_model(self, model):
         pass
@@ -65,6 +65,9 @@ class ModifiedTensorBoard(TensorBoard):
         self.update_stats(**logs)
 
     def on_batch_end(self, batch, logs=None):
+        pass
+
+    def on_train_end(self, logs=None):
         pass
 
     def update_stats(self, **stats):
@@ -98,27 +101,30 @@ class AILanding(object):
         Through the help of waypoints
     """
 
-    def __init__(self, environment=gym.make('xplane-gym-v0', clientAddr='0.0.0.0', xpHost='192.168.0.1', xpPort=49009, clientPort=1), learning_rate=0.01,
-                 discount=0.95, exploration_rate=1.0):
+    def __init__(self):
 
-        # Main model
-        self.model = self.create_model(lr=learning_rate)
+        self.NAME = 'AI_LANDING'
+        self.model = self.create_model()
 
-        # Target model
-        self.target_model = self.create_model(lr=learning_rate)
+        # Target network
+        self.target_model = self.create_model()
         self.target_model.set_weights(self.model.get_weights())
 
-        # An array with the last n steps for training
         self.replay_memory = deque(maxlen=REPLAY_MEMORY_SIZE)
 
-        self.learning_rate = learning_rate
-        self.discount = discount
-        self.exploration_rate = exploration_rate
+        # Custom tensorboard object
+        now = datetime.now()
+        now_format = now.strftime("%Y-%m-%dT%H-%M-%S")
+        self.tensorboard = ModifiedTensorBoard(log_dir="logs/{}-{}".format(self.NAME, now_format))
 
-        self.input_count = environment.observation_space
-        self.output_count = environment.action_space
+        self.target_update_counter = 0
 
-    def create_model(self, lr):
+    def create_model(self):
+
+        """
+                Creates a model
+                :return: The created model
+                """
 
         print('*****************************************')
         print('*****************************************')
@@ -135,7 +141,7 @@ class AILanding(object):
         # Create model
         model = tf.keras.Model(inputs=m_input, outputs=outputs, name="AI_LANDING")
         model.compile(
-            optimizer=SGD(lr=LEARNING_RATE),
+            optimizer=Adam(lr=LEARNING_RATE),
             loss='binary_crossentropy'
         )
         print(model.summary())
@@ -159,11 +165,12 @@ class AILanding(object):
         minibatch = random.sample(self.replay_memory, MINIBATCH_SIZE)
 
         current_states = np.array([transition[0] for transition in minibatch]) / 255
-        current_qs_list = self.get_qs(current_states)
+
+        current_qs_list = self.model.predict(current_states)
 
         new_current_states = np.array([transition[3] for transition in minibatch]) / 255
 
-        future_qs_list = self.get_qs(new_current_states, target_model=True)
+        future_qs_list = self.target_model.predict(new_current_states)
         X = []
         y1 = []
         y2 = []
@@ -271,23 +278,26 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
     # Reset flag and start iterating until episode ends
     done = False
     while not done:
-        if np.random.random() > epsilon:
-            # Get predicted action
-            # action = agent.get_qs(current_state)
-            steering, gear, flaps = agent.model.predict(current_state)
-            action = [steering[0], steering[1], steering[2], steering[3], round(gear[0].astype('int')), flaps[0],
-                      flaps[1]]
-        else:
-            # Get random action
-            r_action = env.action_space.sample()
-            steering = [r_action[0], r_action[1], r_action[2], r_action[3]]
-            gear = [r_action[4]]
-            flaps = [r_action[5], r_action[6]]
-            # reshape random action to correct format
-            action = [r_action[0], r_action[1], r_action[2], r_action[3], round(r_action[4]).astype('int'), r_action[5],
-                      r_action[6]]
+        try:
+            if np.random.random() > epsilon:
+                # Get predicted action
+                # action = agent.get_qs(current_state)
+                steering, gear, flaps = agent.model.predict(current_state)
+                action = [steering[0], steering[1], steering[2], steering[3], round(gear[0].astype('int')), flaps[0],
+                          flaps[1]]
+            else:
+                # Get random action
+                r_action = env.action_space.sample()
+                steering = [r_action[0], r_action[1], r_action[2], r_action[3]]
+                gear = [r_action[4]]
+                flaps = [r_action[5], r_action[6]]
+                # reshape random action to correct format
+                action = [r_action[0], r_action[1], r_action[2], r_action[3], round(r_action[4]).astype('int'), r_action[5],
+                          r_action[6]]
+        except:
+            print(current_state)
 
-        new_state, reward, done, _ = env.step(action, AIType=AI_type.Cruise)
+        new_state, reward, done, _ = env.step(action, AIType=AI_type.Landing)
         # print('step: {} action: {} reward: {}'.format(step, action, reward))
 
         episode_reward += reward
