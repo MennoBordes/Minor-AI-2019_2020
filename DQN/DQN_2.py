@@ -27,10 +27,15 @@ MIN_REPLAY_MEMORY_SIZE = 100  # 100
 MINIBATCH_SIZE = 32  # 64
 UPDATE_TARGET_EVERY = 5
 LEARNING_RATE = 0.01
-MIN_REWARD = -800
+MIN_REWARD = -50
 
+# Waypoint files
 WAYPOINT_FILE = 'Routes/flight_straight_1.json'
 WAYPOINT_START_LAND = False
+
+# Checkpoint files
+CHECKPOINT_PATH = 'training_2/cp-{date}.ckpt'
+# CHECKPOINT_DIR = os.path.dirname(CHECKPOINT_PATH)
 
 # SETUP ENVIRONMENT
 parser = argparse.ArgumentParser()
@@ -56,15 +61,23 @@ EPSILON_DECAY = 0.99975
 MIN_EPSILON = 0.001
 
 agent = AI_Cruise(LEARNING_RATE=LEARNING_RATE,
+                  DISCOUNT=DISCOUNT,
                   MINIBATCH_SIZE=MINIBATCH_SIZE,
                   REPLAY_MEMORY_SIZE=REPLAY_MEMORY_SIZE,
-                  UPDATE_COUNTER=UPDATE_TARGET_EVERY)  # AI_Cruise()
+                  UPDATE_COUNTER=UPDATE_TARGET_EVERY,
+                  checkpoint_path=CHECKPOINT_PATH)
+
+# Load existing weights
+# latest_weights = tf.train.latest_checkpoint(CHECKPOINT_DIR)
+# agent.model.load_weights(latest_weights)
+# agent.target_model.load_weights(latest_weights)
 
 ep_rewards = []
+highest_reward = -100
 
 AGGREGATE_STATS_EVERY = 2
 
-EPISODES = 50
+EPISODES = 50_000
 episode = 0
 
 # while episode < EPISODES:
@@ -72,75 +85,99 @@ episode = 0
 # for episode in range(EPISODES):
 # Using tqdm for tracking info about the episodes
 for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
+    try:
 
-    # Restarting episode
-    episode_reward = 0
-    step = 1
+        # Restarting episode
+        episode_reward = 0
+        step = 1
 
-    # Reset environment and get initial state
-    current_state = env.reset()
-    env.remove_waypoints()
-    env.add_waypoints(WAYPOINT_FILE, WAYPOINT_START_LAND)
+        # Reset environment and get initial state
+        current_state = env.reset()
+        env.remove_waypoints()
+        env.add_waypoints(WAYPOINT_FILE, WAYPOINT_START_LAND)
 
-    # Reset flag and start iterating until episode ends
-    done = False
-    while not done:
-        if np.random.random() > epsilon:
-            # Get predicted action
-            # action = agent.get_qs(current_state)
-            steering, gear, flaps = agent.model.predict(current_state)
-            action = [steering[0], steering[1], steering[2], steering[3], round(gear[0].astype('int')), flaps[0],
-                      flaps[1]]
-        else:
-            # Get random action
-            r_action = env.action_space.sample()
-            steering = [r_action[0], r_action[1], r_action[2], r_action[3]]
-            gear = [r_action[4]]
-            flaps = [r_action[5], r_action[6]]
-            # reshape random action to correct format
-            action = [r_action[0], r_action[1], r_action[2], r_action[3], round(r_action[4]).astype('int'), r_action[5],
-                      r_action[6]]
+        # Reset flag and start iterating until episode ends
+        done = False
+        while not done:
+            try:
 
-        new_state, reward, done, _ = env.step(action, AIType=AI_type.Cruise)
-        # print('step: {} action: {} reward: {}'.format(step, action, reward))
+                if np.random.random() > epsilon:
+                    # Get predicted action
+                    # action = agent.get_qs(current_state)
+                    steering, gear, flaps = agent.model.predict(current_state)
+                    action = [steering[0], steering[1], steering[2], steering[3],
+                              round(gear[0].astype('int')), flaps[0],
+                              flaps[1]]
+                else:
+                    # Get random action
+                    r_action = env.action_space.sample()
+                    steering = [r_action[0], r_action[1], r_action[2], r_action[3]]
+                    gear = [r_action[4]]
+                    flaps = [r_action[5], r_action[6]]
+                    # reshape random action to correct format
+                    action = [r_action[0], r_action[1], r_action[2], r_action[3],
+                              round(r_action[4]).astype('int'), r_action[5], r_action[6]]
 
-        episode_reward += reward
+                new_state, reward, done, _ = env.step(action, AIType=AI_type.Cruise)
+                # print('step: {} action: {} reward: {}'.format(step, action, reward))
 
-        # Every step update replay memory and train main network
-        # agent.update_replay_memory((current_state, action, reward, new_state, done))
-        agent.update_replay_memory((current_state, (steering, gear, flaps), reward, new_state, done))
-        agent.train(done, step)
+                episode_reward += reward
 
-        current_state = new_state
-        step += 1
+                # Every step update replay memory and train main network
+                # agent.update_replay_memory((current_state, action, reward, new_state, done))
+                agent.update_replay_memory((current_state, (steering, gear, flaps), reward, new_state, done))
+                agent.train(done, step)
 
-        sleep(0.05)
+                current_state = new_state
+                step += 1
+                # print(f'reward: {reward}')
+                sleep(0.1)
+            except Exception as e:
+                print(f'state: {new_state}')
+                print(f"Error: {e.__class__} \nErrorValue: {str(e)}")
 
-    # Append episode reward to a list and log stats (every given number of episodes)
-    episode_reward = round(episode_reward, 1)
-    # print('\nepisode: {} episode_reward: {}\n'.format(episode, episode_reward))
-    ep_rewards.append(episode_reward)
+        # Append episode reward to a list and log stats (every given number of episodes)
+        episode_reward = round(episode_reward, 1)
+        ep_rewards.append(episode_reward)
 
-    # Add episode reward to a list and log the stats (only for every n episodes)
-    if not episode % AGGREGATE_STATS_EVERY or episode == 1:
-        average_reward = sum(ep_rewards[-AGGREGATE_STATS_EVERY:]) / len(ep_rewards[-AGGREGATE_STATS_EVERY:])
-        min_reward = min(ep_rewards[-AGGREGATE_STATS_EVERY:])
-        max_reward = max(ep_rewards[-AGGREGATE_STATS_EVERY:])
-
-        # Save model, but only when min reward is greater or equal to set value
-        if min_reward >= MIN_REWARD:
+        # Save model if score is higher than previous highest score
+        if episode_reward > highest_reward:
+            # Set new highest reward
+            highest_reward = episode_reward
             now = datetime.now()
             now_format = now.strftime("%Y-%m-%dT%H-%M-%S")
-            agent.model.save(f'train_models/{agent.NAME}__{now_format}__{episode}episode__{max_reward:_>7.2f}max_{average_reward:_>7.2f}avg_{min_reward:_>7.2f}min__.h5')
+            agent.model.save(
+                f'train_models/{agent.NAME}__{now_format}__'
+                f'{episode}episode__'
+                f'{episode_reward:_>7.2f}reward__.h5')
 
-    # Decay epsilon
-    if epsilon > MIN_EPSILON:
-        epsilon *= EPSILON_DECAY
-        epsilon = max(MIN_EPSILON, epsilon)
+        if not episode % AGGREGATE_STATS_EVERY or episode == 1:
+            average_reward = sum(ep_rewards[-AGGREGATE_STATS_EVERY:]) / len(ep_rewards[-AGGREGATE_STATS_EVERY:])
+            min_reward = min(ep_rewards[-AGGREGATE_STATS_EVERY:])
+            max_reward = max(ep_rewards[-AGGREGATE_STATS_EVERY:])
 
-    for index, reward in enumerate(ep_rewards):
-        print(f'Episode: {index} Reward: {reward}')
-    # except Exception as e:
-    #     print("Error: {} \nErrorValue: {}".format(e.__class__, str(e)))
+            # Save model, but only when min reward is greater or equal to set value
+            if min_reward >= MIN_REWARD:
+                now = datetime.now()
+                now_format = now.strftime("%Y-%m-%dT%H-%M-%S")
+                agent.model.save(
+                    f'train_models/{agent.NAME}__{now_format}__'
+                    f'{episode}episode__'
+                    f'{max_reward:_>7.2f}max_'
+                    f'{average_reward:_>7.2f}avg_'
+                    f'{min_reward:_>7.2f}min__.h5')
+
+        # Decay epsilon
+        if epsilon > MIN_EPSILON:
+            epsilon *= EPSILON_DECAY
+            epsilon = max(MIN_EPSILON, epsilon)
+
+        print(f'\nCurrent episode: {episode} reward: {episode_reward}')
+        print(f'Highest episode: {ep_rewards.index(max(ep_rewards)) + 1} reward: {max(ep_rewards)}')
+        # for index, reward in enumerate(ep_rewards):
+        #     print(f'Episode: {index} Reward: {reward}')
+    except Exception as e:
+        ep_rewards.append(-999)
+        print(f"Error: {e.__class__} \nErrorValue: {str(e)}")
 
 env.close()
