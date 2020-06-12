@@ -19,6 +19,8 @@ from current_training_model import current_training
 
 # Cruise model
 from ai_cruise import AI_Cruise
+# Landing model
+from ai_landing import AI_Landing
 
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
@@ -44,7 +46,7 @@ if current_training == AI_type.Cruise:
 
 elif current_training == AI_type.Landing:
     CURRENT_MODEL = AI_type.Landing
-    WAYPOINT_FILE = 'Routes/EHAM-LEVC_amsterdam-valencia.json'
+    WAYPOINT_FILE = 'Routes/EHAM_amsterdam_approach.json'
     WAYPOINT_START_LAND = False
     CHECKPOINT_PATH = 'training_3/cp-{date}.ckpt'
 

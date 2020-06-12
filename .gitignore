@@ -142,3 +142,6 @@ dmypy.json
 /DQN/training_1
 /DQN/training_2
 DQN/training_2/checkpoint
+/DQN/training_2/
+/DQN/training_3/
+/DQN/training_4/
