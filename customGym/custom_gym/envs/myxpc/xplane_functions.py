@@ -39,5 +39,23 @@ def test_waypoint():
         print('sent')
 
 
-
-
+def check_failures():
+    print("X-Plane Connect example script")
+    print("Setting up simulation")
+    with xpc.XPlaneConnect() as client:
+        # Verify connection
+        try:
+            # If X-Plane does not respond to the request, a timeout error
+            # will be raised.
+            client.getDREF("sim/test/test_float")
+        except:
+            print("Error establishing connection to X-Plane.")
+            print("Exiting...")
+            return
+        failures_dref = "sim/operation/failures/failures"
+        failures = client.getDREF(failures_dref)
+        for x in failures:
+            if x > 0.0:
+                return True
+        return False 
+    

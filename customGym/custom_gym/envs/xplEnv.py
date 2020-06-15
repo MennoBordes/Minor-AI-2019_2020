@@ -1,9 +1,11 @@
 import gym
-from gym import error, spaces, utils
+from gym import error, utils
 from gym.utils import seeding
 from custom_gym.envs.myxpc import xpc2 as xpc
 from custom_gym.envs.myxpc.xplane_functions import get_waypoints
+from gym.spaces import Box
 import pygetwindow
+import numpy as np
 from pydirectinput import keyDown, keyUp
 import time
 
@@ -19,6 +21,7 @@ class XPL(gym.Env):
 
     def reward(self):
         get_waypoints()
+
     def reset(self):
         print("reset")
         # Set simulation speed for faster training
@@ -50,6 +53,25 @@ class XPL(gym.Env):
         keyUp(';')
         # Return to the old window I was on
         current_window.activate()
+    
+    def state(self):
+        print("Setting up simulation")
+        with xpc.XPlaneConnect() as client:
+            # Verify connection
+            try:
+                # If X-Plane does not respond to the request, a timeout error
+                # will be raised.
+                client.getDREF("sim/test/test_float")
+            except:
+                print("Error establishing connection to X-Plane.")
+                print("Exiting...")
+                return
+            air_speed_dref = "sim/flightmodel/position/true_airspeed"
+            air_speed = client.getDREF(air_speed_dref)
+            position = np.array(client.getPOSI(0))
+            observation = np.append(position, [air_speed])
+        return observation
+            
 
     def render(self, mode="human"):
         print("render")
@@ -62,5 +84,22 @@ class XPL(gym.Env):
         xplane_window.activate()
         keyDown('p')
         keyUp('p')
-    
-    
+
+    def actions(self):
+        movements = []
+
+    def get_waypoints(self):
+        print("Setting up simulation")
+        with xpc.XPlaneConnect() as client:
+            # Verify connection
+            try:
+                # If X-Plane does not respond to the request, a timeout error
+                # will be raised.
+                client.getDREF("sim/test/test_float")
+            except:
+                print("Error establishing connection to X-Plane.")
+                print("Exiting...")
+                return
+            waypoints = []
+            for x in range(100):
+                print('hello')
