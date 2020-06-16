@@ -12,7 +12,7 @@ def speedbr_up_full():
             print("Error establishing connection to X-Plane.")
             print("Exiting...")
             return
-        head_l = [-988, -998, -988, -988, -988, -998, 1.5]
+        head_l = [-998, -998, -998, -998, -998, -998, 1.5]
         client.sendPOSI(head_l)
 
 def speedbr_up_1():
@@ -26,7 +26,7 @@ def speedbr_up_1():
             print("Error establishing connection to X-Plane.")
             print("Exiting...")
             return
-        speedbr_u1 = [-988, -998, -988, -988, -988, -998, 1.0]
+        speedbr_u1 = [-998, -998, -998, -998, -998, -998, 1.0]
         client.sendCTRL(speedbr_u1)
 
 def speedbr_up_2():
@@ -40,7 +40,7 @@ def speedbr_up_2():
             print("Error establishing connection to X-Plane.")
             print("Exiting...")
             return
-        speedbr_u2 = [-988, -998, -988, -988, -988, -998, 0.5]
+        speedbr_u2 = [-998, -998, -998, -998, -998, -998, 0.5]
         client.sendCTRL(speedbr_u2)
 
 def speedbr_neutral():
@@ -54,7 +54,7 @@ def speedbr_neutral():
             print("Error establishing connection to X-Plane.")
             print("Exiting...")
             return
-        speedbr_n = [-988, -998, -988, -988, -988, -998, 0]
+        speedbr_n = [-998, -998, -998, -998, -998, -998, 0]
         client.sendCTRL(speedbr_n)
 
 
@@ -69,5 +69,5 @@ def speedbr_down():
             print("Error establishing connection to X-Plane.")
             print("Exiting...")
             return
-        speedbr_d = [-988, -998, -988, -988, -988, -998, -0.5]
+        speedbr_d = [-998, -998, -998, -998, -998, -998, -0.5]
         client.sendCTRL(speedbr_d)
