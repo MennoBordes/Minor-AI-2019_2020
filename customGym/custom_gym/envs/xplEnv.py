@@ -2,11 +2,12 @@ import gym
 from gym import error, utils
 from gym.utils import seeding
 from custom_gym.envs.myxpc import xpc2 as xpc
-from custom_gym.envs.myxpc.utils import observation, check_failures, check_goal_reached, perform_action, check_wp_reached, get_waypoints, set_waypoint
+from custom_gym.envs.myxpc.utils import observation, check_failures, check_goal_reached, perform_action, check_wp_reached, get_waypoints, set_waypoint, check_route
 import pygetwindow
 import numpy as np
 from pydirectinput import keyDown, keyUp
 import time
+import asyncio
 
 
 class XPL(gym.Env):
@@ -18,14 +19,13 @@ class XPL(gym.Env):
         self.waypoints = get_waypoints()
         self.waypoint_counter = 0
         self.current_waypoint = self.waypoints[self.waypoint_counter]
+        # check_route()
         
     
 
    
-    def reset(self):
+    async def reset(self):
         print("reset")
-        # Set simulation speed for faster training
-        print("Setting up simulation")
         with xpc.XPlaneConnect() as client:
             # Verify connection
             try:
@@ -40,9 +40,13 @@ class XPL(gym.Env):
             set_waypoint(self.waypoints[0])
             # Setting simulation speed
             simulation_dref = "sim/time/sim_speed"
-            client.sendDREF(simulation_dref, 1000)
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(client.sendDREF(simulation_dref, 1000))
             res = client.getDREF(simulation_dref)
             print(res)
+
+            
         # Selecting the current and XPlane window 
         current_window = pygetwindow.getActiveWindow()
         xplane_window = pygetwindow.getWindowsWithTitle("X-System")[0]
@@ -99,11 +103,11 @@ class XPL(gym.Env):
 
         # Perform action
         perform_action(action)
-        time.sleep(3)
+        time.sleep(1)
         # Evaluate the observation
-        time.sleep(3)
+        time.sleep(1)
         new_observation = observation()
-
+        time.sleep(3)
         # Initialize variables for reward
         reward = 0
         plane_lat = new_observation[0]
@@ -112,21 +116,22 @@ class XPL(gym.Env):
 
         
         # Check for failures/crashes and assigining reward
-        time.sleep(3)
+        time.sleep(1)
         check_failure = check_failures()
         
         # Check if goal is reached and assigining reward
-        time.sleep(3)
+        time.sleep(1)
         check_goal = check_goal_reached(plane_lat, plane_lon, plane_alt)
         
         # Check if a waypoint is reached
-        time.sleep(3)
+        time.sleep(1)
         check_wp = check_wp_reached(plane_lat, plane_lon, plane_alt, self.current_waypoint)
         if check_wp == True:
             reward = reward + 10
+            print("waypoint reached")
             if self.waypoint_counter < 99:
                 self.waypoint_counter = self.waypoint_counter + 1
-                set_waypoint(self.current_waypoint)
+                # set_waypoint(self.current_waypoint)
         else:
             reward = reward - 1
 

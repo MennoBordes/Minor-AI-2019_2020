@@ -25,6 +25,7 @@ def get_waypoints():
     return wp
 
 def set_waypoint(waypoint):
+    print("Setting next waypoint")
     with xpc.XPlaneConnect() as client:
         # Verify connection
         try:
@@ -89,8 +90,7 @@ def test_waypoint():
 
 
 def check_failures():
-    print("X-Plane Connect example script")
-    print("Setting up simulation")
+    print("Checking for failures")
     with xpc.XPlaneConnect() as client:
         # Verify connection
         try:
@@ -110,7 +110,7 @@ def check_failures():
 
 
 def observation():
-    print("Setting up simulation")
+    print("Retrieving observation")
     with xpc.XPlaneConnect() as client:
         # Verify connection
         try:
@@ -125,7 +125,7 @@ def observation():
         air_speed = client.getDREF(air_speed_dref)
         position = np.array(client.getPOSI(0))
         observation = np.append(position, [air_speed])
-        return observation
+        return observation[0:3]
 
 def calc_distance(coord1, coord2):
     print('distance')
@@ -154,7 +154,9 @@ def check_goal_reached(plane_lat, plane_lon, plane_alt):
     alt_check = 0.001 <= alt_dist >= 0
         
     if lat_check and lon_check and alt_check:
+        print("Goal reached")
         return True
+        
     else:
         return False
         
@@ -180,6 +182,7 @@ def check_wp_reached(plane_lat, plane_lon, plane_alt, wp):
     alt_check = 0.001 <= alt_dist >= 0
         
     if lat_check and lon_check and alt_check:
+        print("Waypoint reached")
         return True
     else:
         return False
@@ -188,8 +191,8 @@ def check_wp_reached(plane_lat, plane_lon, plane_alt, wp):
 
 def perform_action(index):
     # Possible actions
-    actions = [bot_left,bot_mid,bot_right, gear_up, gear_down, mid_left, mid_mid, mid_right, 
-    throttle_up_full, throttle_up_half, throttle_neutral, throttle_down_half, throttle_down_full,
+    actions = [bot_left,bot_mid,bot_right, mid_left, mid_mid, mid_right, 
+    throttle_up_full,throttle_up_low, throttle_up_half, throttle_neutral, throttle_down_half, throttle_down_full,
     top_left, top_mid, top_right]
 
     # Choose action
@@ -197,4 +200,4 @@ def perform_action(index):
 
     # Perform action
     chosen_action()
-    print('performed action', index)
+    

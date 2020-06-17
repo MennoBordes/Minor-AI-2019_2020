@@ -3,6 +3,7 @@ from custom_gym.envs.myxpc import xpc2 as xpc
 
 
 def bot_left():
+    print('bot_left')
     with xpc.XPlaneConnect() as client:
         # Verify connection
         try:
@@ -17,6 +18,7 @@ def bot_left():
         client.sendCTRL(bottom_l)
 
 def bot_mid():
+    print('bot_mid')
     with xpc.XPlaneConnect() as client:
         # Verify connection
         try:
@@ -31,6 +33,7 @@ def bot_mid():
         client.sendCTRL(bottom_m)
 
 def bot_right():
+    print('bot_right')
     with xpc.XPlaneConnect() as client:
         # Verify connection
         try:

@@ -3,6 +3,7 @@ from custom_gym.envs.myxpc import xpc2 as xpc
 
 
 def top_left():
+    print('top_left')
     with xpc.XPlaneConnect() as client:
         # Verify connection
         try:
@@ -17,6 +18,7 @@ def top_left():
         client.sendCTRL(top_l)
 
 def top_mid():
+    print('top_mid')
     with xpc.XPlaneConnect() as client:
         # Verify connection
         try:
@@ -32,6 +34,7 @@ def top_mid():
 
 
 def top_right():
+    print('top_right')
     with xpc.XPlaneConnect() as client:
         # Verify connection
         try:
