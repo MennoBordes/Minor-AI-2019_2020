@@ -24,7 +24,7 @@ class XPL(gym.Env):
     
 
    
-    async def reset(self):
+    def reset(self):
         print("reset")
         with xpc.XPlaneConnect() as client:
             # Verify connection
@@ -40,38 +40,37 @@ class XPL(gym.Env):
             set_waypoint(self.waypoints[0])
             # Setting simulation speed
             simulation_dref = "sim/time/sim_speed"
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(client.sendDREF(simulation_dref, 1000))
+            client.sendDREF(simulation_dref, 1000.0)
             res = client.getDREF(simulation_dref)
             print(res)
 
-            
-        # Selecting the current and XPlane window 
-        current_window = pygetwindow.getActiveWindow()
-        xplane_window = pygetwindow.getWindowsWithTitle("X-System")[0]
-        # Focuss on the Xplane window
-        xplane_window.activate()
+            # Selecting the current and XPlane window 
+            current_window = pygetwindow.getActiveWindow()
+            xplane_window = pygetwindow.getWindowsWithTitle("X-System")[0]
+            # Focuss on the Xplane window
+            xplane_window.activate()
 
-        # Performing the reset command ctr+; on the focussed window
-        keyDown('ctrl')
-        keyDown(';')
-        keyUp('ctrl')
-        keyUp(';')
+            # Performing the reset command ctr+; on the focussed window
+            keyDown('ctrl')
+            keyDown(';')
+            keyUp('ctrl')
+            keyUp(';')
 
-        time.sleep(3)
-         # Releasing brakes
-        keyDown('b')
-        keyUp('b')
+            time.sleep(3)
+            # Releasing brakes
+            keyDown('b')
+            keyUp('b')
 
-        # Return to the old window I was on
-        current_window.activate()
-        # Gives the simulator enough time to reload
-        time.sleep(3)
-        # Get observation
-        obs = observation()
-        return obs
-    
+            # Return to the old window I was on
+            current_window.activate()
+            # Gives the simulator enough time to reload
+            time.sleep(3)
+            # Get observation
+            obs = observation()
+            time.sleep(3)
+            return obs
+        
+        
             
 
     def render(self, mode="human"):
@@ -98,14 +97,10 @@ class XPL(gym.Env):
                 print(pt)
 
     def step(self, action):
-        # Setting a delay of 3 seconds between functions calls so that XPC is not overloaded
-       
-
         # Perform action
         perform_action(action)
-        time.sleep(1)
-        # Evaluate the observation
-        time.sleep(1)
+        time.sleep(4)
+        # Get obeservation
         new_observation = observation()
         time.sleep(3)
         # Initialize variables for reward
@@ -116,32 +111,29 @@ class XPL(gym.Env):
 
         
         # Check for failures/crashes and assigining reward
-        time.sleep(1)
         check_failure = check_failures()
         
         # Check if goal is reached and assigining reward
-        time.sleep(1)
-        check_goal = check_goal_reached(plane_lat, plane_lon, plane_alt)
+        if self.waypoint_counter == 99:
+            check_goal = check_goal_reached(plane_lat, plane_lon, plane_alt)
         
         # Check if a waypoint is reached
-        time.sleep(1)
         check_wp = check_wp_reached(plane_lat, plane_lon, plane_alt, self.current_waypoint)
         if check_wp == True:
             reward = reward + 10
             print("waypoint reached")
             if self.waypoint_counter < 99:
                 self.waypoint_counter = self.waypoint_counter + 1
-                # set_waypoint(self.current_waypoint)
-        else:
-            reward = reward - 1
+                set_waypoint(self.current_waypoint)
 
         # Assigining done 
         if check_failure  == True:
             done = True
             reward = reward - 100
-        elif check_goal == True:
-            done = True
-            reward = reward + 50
+        elif self.waypoint_counter == 99 :
+            if check_goal == True:
+                done = True
+                reward = reward + 50
         else:
             done = False
             reward = reward

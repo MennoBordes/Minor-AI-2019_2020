@@ -10,6 +10,7 @@ from custom_gym.envs.myxpc.actions.top import *
 import json
 import time
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 
@@ -123,7 +124,8 @@ def observation():
             return
         air_speed_dref = "sim/flightmodel/position/true_airspeed"
         air_speed = client.getDREF(air_speed_dref)
-        position = np.array(client.getPOSI(0))
+        position_val = client.getPOSI(0)
+        position = np.array(position_val)
         observation = np.append(position, [air_speed])
         return observation[0:3]
 
@@ -200,4 +202,30 @@ def perform_action(index):
 
     # Perform action
     chosen_action()
+
+def draw_graph(episode, steps, reward):
+    plt.figure(episode,steps)
+    plt.savefig('DQN_model_vis.png')
+
+
+def test_():
+    with xpc.XPlaneConnect() as client:
+        # Verify connection
+        try:
+            # If X-Plane does not respond to the request, a timeout error
+            # will be raised.
+            client.getDREF("sim/test/test_float")
+        except:
+            print("Error establishing connection to X-Plane.")
+            print("Exiting...")
+            return
+        val = client.getPOSI()
+        print(val[0])
+        arr = np.array([val[0]], dtype='c16')
+        print(arr)
+        
+
+
+test_()
+
     
