@@ -109,14 +109,20 @@ class XplaneENV(gym.Env):
             if self.closer_lat(self.previous_position, self.ControlParameters.stateAircraftPosition,
                                self.waypoints[self.waypoint_goal]):
                 reward += 0.4
+            else:
+                reward -= 0.4
 
             if self.closer_lon(self.previous_position, self.ControlParameters.stateAircraftPosition,
                                self.waypoints[self.waypoint_goal]):
                 reward += 0.4
+            else:
+                reward -= 0.4
 
             if self.closer_alt(self.previous_position, self.ControlParameters.stateAircraftPosition,
                                self.waypoints[self.waypoint_goal]):
                 reward += 0.2
+            else:
+                reward -= 0.2
 
             # Update previous position to current position
             self.previous_position = self.ControlParameters.stateAircraftPosition
