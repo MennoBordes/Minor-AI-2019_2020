@@ -36,7 +36,7 @@ class ModifiedTensorBoard(TensorBoard):
 class AI_Cruise:
     def __init__(self, LEARNING_RATE=0.001, DISCOUNT=0.99,
                  MINIBATCH_SIZE=64, REPLAY_MEMORY_SIZE=50000,
-                 UPDATE_COUNTER=5, checkpoint_path='training_2/cp-{}.ckpt'):
+                 UPDATE_COUNTER=5, checkpoint_path='training_2/cp-episode_{episode:04d}.ckpt'):
         # Main model
         self.NAME = 'AI_CRUISE'
 
@@ -51,7 +51,9 @@ class AI_Cruise:
         try:
             latest_weights = tf.train.latest_checkpoint(self.checkpoint_dir)
             self.model.load_weights(latest_weights)
+            print(f'Loaded weights from: {latest_weights}')
         except:
+            print('Unable to load existing weights')
             pass
         # Target network
         self.target_model = self.create_model()
@@ -70,7 +72,8 @@ class AI_Cruise:
                                                                       verbose=1)
         # datetime.now()
         # now_format = now.strftime("%Y-%m-%dT%H-%M-%S")
-        self.model.save_weights(checkpoint_path.format(date=datetime.now().strftime("%Y-%m-%dT%H-%M-%S")))
+        # self.model.save_weights(checkpoint_path.format(date=datetime.now().strftime("%Y-%m-%dT%H-%M-%S")))
+        self.model.save_weights(checkpoint_path.format(episode=0))
 
     def create_model(self):
         """
@@ -111,7 +114,7 @@ class AI_Cruise:
         """
         self.replay_memory.append(transition)
 
-    def train(self, terminal_state, step):
+    def train(self, terminal_state, step, episode):
         # Start training only if certain number of samples is already saved
         if len(self.replay_memory) < self.minibatch_size:
             return
@@ -191,7 +194,8 @@ class AI_Cruise:
         # Update target network counter
         if terminal_state:
             self.target_update_counter += 1
-            self.model.save_weights(self.checkpoint_path.format(date=datetime.now().strftime("%Y-%m-%dT%H-%M-%S")))
+            # self.model.save_weights(self.checkpoint_path.format(date=datetime.now().strftime("%Y-%m-%dT%H-%M-%S")))
+            self.model.save_weights(self.checkpoint_path.format(episode=episode))
 
         # If counter reaches set value, update target network with weights of main network
         if self.target_update_counter > self.update_counter:

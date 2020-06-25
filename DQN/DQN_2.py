@@ -18,9 +18,9 @@ from gym_xplane.envs.xplane_env import AI_type
 from DQN.current_training_model import current_training
 
 # Cruise model
-from ai_cruise import AI_Cruise
+from DQN.ai_cruise import AI_Cruise
 # Landing model
-from ai_landing import AI_Landing
+from DQN.ai_landing import AI_Landing
 
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
@@ -39,7 +39,7 @@ if current_training == AI_type.Cruise:
     CURRENT_MODEL = AI_type.Cruise
     WAYPOINT_FILE = 'Routes/flight_straight_1.json'
     WAYPOINT_START_LAND = False
-    CHECKPOINT_PATH = 'training_2/cp-{date}.ckpt'
+    CHECKPOINT_PATH = 'training_2/cp-episode_{episode:04d}.ckpt'
     agent = AI_Cruise(LEARNING_RATE=LEARNING_RATE, DISCOUNT=DISCOUNT,
                       MINIBATCH_SIZE=MINIBATCH_SIZE, REPLAY_MEMORY_SIZE=REPLAY_MEMORY_SIZE,
                       UPDATE_COUNTER=UPDATE_TARGET_EVERY, checkpoint_path=CHECKPOINT_PATH)
@@ -143,14 +143,14 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
 
                 # Every step update replay memory and train main network
                 agent.update_replay_memory((current_state, (steering, gear, flaps), reward, new_state, done))
-                agent.train(done, step)
+                agent.train(done, step, episode)
 
                 current_state = new_state
                 step += 1
                 sleep(0.1)
             except Exception as e:
                 print(f'state: {new_state}')
-                print(f"Error: {e.__class__} \nErrorValue: {str(e)}")
+                # print(f"Error: {e.__class__} \nErrorValue: {str(e)}")
 
         # Append episode reward to a list and log stats (every given number of episodes)
         episode_reward = round(episode_reward, 1)
