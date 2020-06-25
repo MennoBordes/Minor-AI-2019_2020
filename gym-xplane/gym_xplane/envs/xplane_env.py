@@ -109,14 +109,20 @@ class XplaneENV(gym.Env):
             if self.closer_lat(self.previous_position, self.ControlParameters.stateAircraftPosition,
                                self.waypoints[self.waypoint_goal]):
                 reward += 0.4
+            else:
+                reward -= 0.4
 
             if self.closer_lon(self.previous_position, self.ControlParameters.stateAircraftPosition,
                                self.waypoints[self.waypoint_goal]):
                 reward += 0.4
+            else:
+                reward -= 0.4
 
             if self.closer_alt(self.previous_position, self.ControlParameters.stateAircraftPosition,
                                self.waypoints[self.waypoint_goal]):
                 reward += 0.2
+            else:
+                reward -= 0.2
 
             # Update previous position to current position
             self.previous_position = self.ControlParameters.stateAircraftPosition
@@ -124,16 +130,16 @@ class XplaneENV(gym.Env):
             if AIType == AI_type.Landing:
                 # Check if the plane has crashed
                 if self.has_crashed():
-                    reward -= 10000
+                    reward -= 100
                     self.ControlParameters.flag = True
 
                 # Check if the plane has reached the endpoint
-                if self.has_landed(state):
+                elif self.has_landed(state, self.ControlParameters.stateAircraftPosition):
                     reward += 500
                     self.ControlParameters.flag = True
 
-                if self.is_grounded():
-                    reward -= 100
+                elif self.is_grounded(self.ControlParameters.stateAircraftPosition):
+                    reward += 10
                     self.ControlParameters.flag = True
                     
             if AIType == AI_type.Cruise:
@@ -254,18 +260,20 @@ class XplaneENV(gym.Env):
 
         return False
 
-    def is_grounded(self):
+    def is_grounded(self, current_pos):
         """Checks if the plane has gear down and has stopped moving"""
 
-        on_ground = round(XplaneENV.CLIENT.getDREF("sim/flightmodel/failures/onground_any")[0]) > 0
-        if on_ground:
+        on_ground = current_pos[2] < 1
+        speed = XplaneENV.CLIENT.getDREF(self.ControlParameters.aircraftSpeed)[0] < 1
+        gear_status = XplaneENV.CLIENT.getDREF("sim/flightmodel/gear/deploy_ratio") == 1
+        if on_ground & speed & gear_status:
             return True
 
         return False
 
-    def has_landed(self, state):
+    def has_landed(self, state, current_pos):
         """Checks if the plane has reached the last waypoint, has gear down and has stopped moving"""
-        if self.reached_goal(state) & self.is_grounded():
+        if self.reached_goal(state) & self.is_grounded(current_pos):
             return True
 
         return False
