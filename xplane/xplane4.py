@@ -193,7 +193,7 @@ def ex4():
 
 
 
-def ex4():
+def ex5():
     with xpc.XPlaneConnect() as client:
         print("testing connection")
         print(client.getDREF("sim/test/test_float"))
@@ -202,8 +202,7 @@ def ex4():
         print(position)
 
 
-if __name__ == "__main__":
-    # ex()
-    # ex2()
-    # ex3()
-    ex4()
+# if __name__ == "__main__":
+#     # ex()
+#     # ex2()
+#     # ex3()
