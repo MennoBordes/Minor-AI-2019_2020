@@ -50,7 +50,7 @@ def check_time():
             print("Exiting...")
         dataref = "sim/time/total_flight_time_sec"
         flight_time = client.getDREF(dataref)
-        print(flight_time)
+        return flight_time
 
 
 def check_fuel():
@@ -66,5 +66,5 @@ def check_fuel():
             print("Exiting...")
         dataref = "sim/flightmodel/weight/m_fuel_total"
         fuel = client.getDREF(dataref)
-        print(fuel)
+        return fuel
     
