@@ -1,66 +1,99 @@
-# Minor-AI-2019_2020 > Autopilot
+# Minor-AI-2019_2020 > AI Pilot
 
+This was a school project where we were tasked with creating a Artificial Intelligence.
+\
+We had chosen to create an AI pilot.
 ## Table of contents
 
-1. Setup of X-plane
-2. Current working file
-3. Additional info
-4. Currently active
+1. [Requirements And Installs](#1-requirements-and-installs)
+2. [X-plane setup](#3-x-plane-setup)
+3. [X-plane connect setup](#4-x-plane-connect-setup)
+4. [Gym environment](#2-gym-environment)
+5. [Run]
 
-# 1. Check if X Plane is set up corectly:
-* Under Data output > General Data output > 
+# 1 Requirements and Installs
+Before continuing please ensure that the python version used in this environment matches the required python version
+```
+Python == 3.7
+```
+Also ensure that the requirements.txt file has been executed. This ensures that all required packages will 
+automatically get installed.
+```
+pip install -r requirements.txt
+```
+
+# 2 Gym environment
+To install the gym_xplane environment run the following code: 
+```
+cd gym-xplane
+pip install -e .
+cd ..
+```
+
+# 3 X-plane setup
+Please install Xplane from the [Xplane-11](https://www.x-plane.com/) website.
+\
+It is possible to use the Demo version, although it will result in automatic crashes after 15 minutes of play-time.  
+
+### 2.2 Check if X Plane is set up corectly:
+* Under Settings > Data output > General Data output > 
   * Network configuration is turned **ON**
   * IP address  =                   192.168.0.1
   * Port        =                   49000
-* Under Data output > Dataref Read/Write >
+* Under Settings > Data output > Dataref Read/Write >
   * Networked computer is turned    **ON**
   * IP address  =                   192.168.0.1
   * Port        =                   49000
 
-### 1.2 Add XPlane Connect extension
-Shut down XPlane
+# 4 X-plane connect setup
+Visit [Xplane-connect](https://github.com/nasa/XPlaneConnect/releases) and download **Version 1.2.1**
+\
+Open the downloaded folder XPlaneConnect-1.2.1 > Open folder xpcPlugin > Select folder XplaneConnect
+\
+Copy folder **XPlaneConnect** to the Game Install folder > **Resources** > **plugins**
 
-Visit https://github.com/nasa/XPlaneConnect/releases and download **Version 1.2.1**
-\
-Open folder XPlaneConnect-1.2.1 > Open folder XplPlugin
-\
-Copy folder XPlaneConnect to Game Install folder > **Resources** > **plugins**
+### 4.1 Testing X-plane connect installation
+In order to test whether the library has been correctly installed
 
 Start XPlane and load a flight.
 \
 At the top, click on plugins > plugin admin > enable/disable and verify that **X-Plane Connect [Version 1.2.1]** is present. 
 
-# 2. Current working file for recieving data
+# 5 Run
+All files which may need to be accessed below are located in the 
+[DQN](https://github.com/Skillerde6de/Minor-AI-2019_2020/tree/master/DQN) folder. 
 
-Folder > xplane
+Since there are multiple AI's which can be chosen, it is important to start at the proper location according for what
+is specified in the current_training_model.py file.
 
-File > xplane4.py
+* TakeOff
+    * Make sure current_training (_within current_training_model.py_) is set to training_TakeOff
+    * Within Xplane, start a new flight from **Schiphol** with the following customization:
+        * Starting from the ramp/~~runway~~ 
+        * At apron S82R
 
-Check the required dependencies which are at the top of the file, before running with your prefered IDE.
+* Cruise:
+    * Make sure current_training (_within current_training_model.py_) is set to training_Cruise
+    * Within Xplane, start a new flight from **Schiphol** with the following customization:
+        * Starting from the ~~ramp~~/runway with a 10 nm approach
+        * At runway 18R
 
-~~In order to stop running, simply press 'esc' while the terminal is selected.~~
+* Landing: 
+    * Make sure current_training (_within current_training_model.py_) is set to training_Landing
+    * Within Xplane, start a new flight from **Schiphol** with the following customization:
+        * Starting from the ~~ramp~~/runway with a 3 nm approach
+        * At runway 27
 
-# 3. Additional info
-In the X-plane_instuctions folder are a couple of files that will be useful for reading/writing data from/to X-Plane
+After making sure the proper location has been set, start the flight.
+\
+Once the flight has finished loading, you can run the DQN_2.py file.
 
-# 4. Currently active
-View the 'todo' file in the xplane folder for the following steps
+## Authors
 
-######
-# Branch: Menno
-######
-**Requirements**
-```
-Python == 3.7
-```
- 
-**Install pip packages**
-```
-pip install tensorflow
-```
+* **Hayder Ali**  - [Hayder1999](https://github.com/Hayder1999)
+* **Felix de Jonge**  - [FelixdeJonge](https://github.com/FelixdeJonge)
+* **Menno Bordes**  - [Skillerde6de](https://github.com/Skillerde6de)
 
-## 1. Gym - XPlane environment
-`To install the gym x-plane environment go through the README file of the folder ` :
-[gym-xplane](https://github.com/Skillerde6de/Minor-AI-2019_2020/tree/Menno/gym-xplane)
+## License
 
-Then open the DQN/DQN.py file and run it.
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/Skillerde6de/Minor-AI-2019_2020/blob/Master/LICENSE) file for details
