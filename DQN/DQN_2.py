@@ -16,11 +16,12 @@ import gym
 import gym_xplane
 from gym_xplane.envs.xplane_env import AI_type
 from DQN.current_training_model import current_training
+import DQN.graph as graph
 
 # Cruise model
-from ai_cruise import AI_Cruise
+from DQN.ai_cruise import AI_Cruise
 # Landing model
-from ai_landing import AI_Landing
+from DQN.ai_landing import AI_Landing
 
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
@@ -39,7 +40,7 @@ if current_training == AI_type.Cruise:
     CURRENT_MODEL = AI_type.Cruise
     WAYPOINT_FILE = 'Routes/flight_straight_1.json'
     WAYPOINT_START_LAND = False
-    CHECKPOINT_PATH = 'training_2/cp-{date}.ckpt'
+    CHECKPOINT_PATH = 'training_2/cp-episode_{episode:04d}.ckpt'
     agent = AI_Cruise(LEARNING_RATE=LEARNING_RATE, DISCOUNT=DISCOUNT,
                       MINIBATCH_SIZE=MINIBATCH_SIZE, REPLAY_MEMORY_SIZE=REPLAY_MEMORY_SIZE,
                       UPDATE_COUNTER=UPDATE_TARGET_EVERY, checkpoint_path=CHECKPOINT_PATH)
@@ -88,16 +89,16 @@ EPSILON_DECAY = 0.99975
 MIN_EPSILON = 0.001
 
 # Load existing weights
-# latest_weights = tf.train.latest_checkpoint(CHECKPOINT_DIR)
-# agent.model.load_weights(latest_weights)
-# agent.target_model.load_weights(latest_weights)
+latest_weights = tf.train.latest_checkpoint("cp-2020-06-25T14-08-05.ckpt")
+agent.model.load_weights(latest_weights)
+agent.target_model.load_weights(latest_weights)
 
 ep_rewards = []
 highest_reward = -100
 
 AGGREGATE_STATS_EVERY = 2
 
-EPISODES = 50_000
+EPISODES = 1
 episode = 0
 
 # while episode < EPISODES:
@@ -110,6 +111,9 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
         # Restarting episode
         episode_reward = 0
         step = 1
+
+        fuel_start = graph.check_fuel()
+        time_start = graph.check_time()
 
         # Reset environment and get initial state
         current_state = env.reset()
@@ -143,19 +147,22 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
 
                 # Every step update replay memory and train main network
                 agent.update_replay_memory((current_state, (steering, gear, flaps), reward, new_state, done))
-                agent.train(done, step)
+                agent.train(done, step, episode)
 
                 current_state = new_state
                 step += 1
                 sleep(0.1)
             except Exception as e:
                 print(f'state: {new_state}')
-                print(f"Error: {e.__class__} \nErrorValue: {str(e)}")
+                # print(f"Error: {e.__class__} \nErrorValue: {str(e)}")
 
         # Append episode reward to a list and log stats (every given number of episodes)
         episode_reward = round(episode_reward, 1)
         ep_rewards.append(episode_reward)
 
+        time_end = graph.check_time()
+        fuel_end = graph.check_fuel()
+        #print
         # Save model if score is higher than previous highest score
         if episode_reward > highest_reward:
             # Set new highest reward
