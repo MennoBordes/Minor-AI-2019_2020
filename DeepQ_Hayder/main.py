@@ -1,7 +1,8 @@
 import gym
 import numpy as np
-from custom_gym.envs.myxpc.utils import observation as obs ,draw_graph
+from custom_gym.envs.myxpc.utils import observation as obs
 from dqn import Agent
+from custom_gym.envs.myxpc.visualization.graph import check_fuel, check_time
 import time
 
 
@@ -10,9 +11,9 @@ def main():
     lr = 0.001
     gam = 0.01
     n_games = 1
-    nn_input = obs()
+    # nn_input = obs()
     agent = Agent(learning_rate=lr, gamma=gam, epsilon=1.0, 
-        input_dims= nn_input.shape, n_actions=15, batch_size=70, file_name='saved_models/dq_model_1.h5')
+        input_dims= (6,), n_actions=15, batch_size=32, file_name='saved_models/dq_model_2.h5')
     scores = []
     total_steps = []
     eps_hist = []
@@ -48,7 +49,9 @@ def main():
         except Exception as e:
             print(str(e))
     # agent.save_model()
-    print(scores)
+    check_time()
+    check_fuel()
+    # print(scores)
     
 main()
 

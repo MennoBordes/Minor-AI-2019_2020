@@ -193,13 +193,13 @@ def ex4():
 
 
 
-def ex5():
-    with xpc.XPlaneConnect() as client:
-        print("testing connection")
-        print(client.getDREF("sim/test/test_float"))
-        print("Getting current plane position")
-        position = client.getPOSI(0)
-        print(position)
+# def ex5():
+#     with xpc.XPlaneConnect() as client:
+#         print("testing connection")
+#         print(client.getDREF("sim/test/test_float"))
+#         print("Getting current plane position")
+#         position = client.getPOSI(0)
+#         print(position)
 
 
 # if __name__ == "__main__":
