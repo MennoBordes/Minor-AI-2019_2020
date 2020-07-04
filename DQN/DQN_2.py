@@ -1,19 +1,11 @@
 import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Input, Dense, Flatten, Dropout, BatchNormalization
-from tensorflow.keras.optimizers import SGD, Adam, RMSprop
-from collections import deque
 import argparse
 from time import sleep
 from datetime import datetime
 from tqdm import tqdm
-from tensorflow.keras.callbacks import TensorBoard
 
 import numpy as np
-import random
-import os
 import gym
-import gym_xplane
 from gym_xplane.envs.xplane_env import AI_type
 from DQN.current_training_model import current_training
 import DQN.graph as graph
@@ -22,9 +14,11 @@ import DQN.graph as graph
 from DQN.ai_cruise import AI_Cruise
 # Landing model
 from DQN.ai_landing import AI_Landing
-
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
+# Takeoff model
+# from DQN.ai_takeoff import AI_Takeoff
+
 
 DISCOUNT = 0.99
 REPLAY_MEMORY_SIZE = 50000

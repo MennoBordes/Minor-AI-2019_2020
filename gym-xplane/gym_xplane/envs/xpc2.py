@@ -1,6 +1,5 @@
 import socket
 import struct
-import select
 from time import sleep
 import pygetwindow as gw
 import gym_xplane.keyPress as key

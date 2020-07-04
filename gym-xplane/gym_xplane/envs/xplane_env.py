@@ -14,7 +14,6 @@ class Initial:
         return xpc.XPlaneConnect(clientAddr, xpHost, xpPort, clientPort, timeout, max_episode_steps)
 
 
-
 class XplaneENV(gym.Env):
     metadata = {'render.modes': ['human']}
 
@@ -371,6 +370,7 @@ class XplaneENV(gym.Env):
 
     def remove_waypoints(self):
         XplaneENV.CLIENT.sendWYPT(op=3, points=[])
+
 
 class AI_type(object):
     TakeOff = 0
