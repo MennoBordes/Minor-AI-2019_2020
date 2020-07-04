@@ -112,6 +112,9 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
         episode_reward = 0
         step = 1
 
+        fuel_start = graph.check_fuel()
+        time_start = graph.check_time()
+
         # Reset environment and get initial state
         current_state = env.reset()
         env.remove_waypoints()
@@ -157,8 +160,8 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
         episode_reward = round(episode_reward, 1)
         ep_rewards.append(episode_reward)
 
-        print(graph.checktime())
-        print(graph.check_fuel())
+        time_end = graph.check_time()
+        fuel_end = graph.check_fuel()
         #print
         # Save model if score is higher than previous highest score
         if episode_reward > highest_reward:
