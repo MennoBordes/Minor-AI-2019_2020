@@ -157,8 +157,8 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
         episode_reward = round(episode_reward, 1)
         ep_rewards.append(episode_reward)
 
-        graph.checktime()
-        graph.check_fuel()
+        print(graph.checktime())
+        print(graph.check_fuel())
         #print
         # Save model if score is higher than previous highest score
         if episode_reward > highest_reward:
