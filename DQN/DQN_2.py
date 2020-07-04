@@ -16,6 +16,7 @@ import gym
 import gym_xplane
 from gym_xplane.envs.xplane_env import AI_type
 from DQN.current_training_model import current_training
+import DQN.graph as graph
 
 # Cruise model
 from ai_cruise import AI_Cruise
@@ -88,16 +89,16 @@ EPSILON_DECAY = 0.99975
 MIN_EPSILON = 0.001
 
 # Load existing weights
-# latest_weights = tf.train.latest_checkpoint(CHECKPOINT_DIR)
-# agent.model.load_weights(latest_weights)
-# agent.target_model.load_weights(latest_weights)
+latest_weights = tf.train.latest_checkpoint("cp-2020-06-25T14-08-05.ckpt")
+agent.model.load_weights(latest_weights)
+agent.target_model.load_weights(latest_weights)
 
 ep_rewards = []
 highest_reward = -100
 
 AGGREGATE_STATS_EVERY = 2
 
-EPISODES = 50_000
+EPISODES = 1
 episode = 0
 
 # while episode < EPISODES:
@@ -110,6 +111,9 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
         # Restarting episode
         episode_reward = 0
         step = 1
+
+        fuel_start = graph.check_fuel()
+        time_start = graph.check_time()
 
         # Reset environment and get initial state
         current_state = env.reset()
@@ -156,6 +160,9 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
         episode_reward = round(episode_reward, 1)
         ep_rewards.append(episode_reward)
 
+        time_end = graph.check_time()
+        fuel_end = graph.check_fuel()
+        #print
         # Save model if score is higher than previous highest score
         if episode_reward > highest_reward:
             # Set new highest reward
