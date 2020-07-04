@@ -32,7 +32,6 @@ LEARNING_RATE = 0.01
 MIN_REWARD = -50
 
 # === Check which model is being trained
-# Waypoint and checkpoint files
 if current_training == AI_type.Cruise:
     CURRENT_MODEL = AI_type.Cruise
     WAYPOINT_FILE = 'Routes/flight_straight_1.json'
@@ -72,14 +71,10 @@ parser.add_argument('--clientPort', help='client port', default=1)
 args = parser.parse_args()
 
 env = gym.make('xplane-gym-v0')
+
 # Create waypoints to target
 env.remove_waypoints()
-# env.add_waypoints('Routes/EHAM-LEVC_amsterdam-valencia.json')
-# env.add_waypoints('Routes/EHAM-LZIB_amsterdam-bratislava.json')
 env.add_waypoints(WAYPOINT_FILE, land_start=WAYPOINT_START_LAND)
-
-# SEED environment
-# env.action_space.seed(0)
 
 epsilon = 1
 EPSILON_DECAY = 0.99975
@@ -98,9 +93,6 @@ AGGREGATE_STATS_EVERY = 2
 EPISODES = 1
 episode = 0
 
-# while episode < EPISODES:
-#     try:
-# for episode in range(EPISODES):
 # Using tqdm for tracking info about the episodes
 for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
     try:
@@ -134,6 +126,7 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
                     steering = [r_action[0], r_action[1], r_action[2], r_action[3]]
                     gear = [r_action[4]]
                     flaps = [r_action[5], r_action[6]]
+
                     # reshape random action to correct format
                     action = [r_action[0], r_action[1], r_action[2], r_action[3],
                               round(r_action[4]).astype('int'), r_action[5], r_action[6]]
@@ -151,7 +144,6 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
                 sleep(0.1)
             except Exception as e:
                 print(f'state: {new_state}')
-                # print(f"Error: {e.__class__} \nErrorValue: {str(e)}")
 
         # Append episode reward to a list and log stats (every given number of episodes)
         episode_reward = round(episode_reward, 1)
@@ -159,7 +151,7 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
 
         time_end = graph.check_time()
         fuel_end = graph.check_fuel()
-        #print
+
         # Save model if score is higher than previous highest score
         if episode_reward > highest_reward:
             # Set new highest reward
@@ -194,8 +186,7 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
 
         print(f'\nCurrent episode: {episode} reward: {episode_reward}')
         print(f'Highest episode: {ep_rewards.index(max(ep_rewards)) + 1} reward: {max(ep_rewards)}')
-        # for index, reward in enumerate(ep_rewards):
-        #     print(f'Episode: {index} Reward: {reward}')
+
     except Exception as e:
         ep_rewards.append(-999)
         print(f"Error: {e.__class__} \nErrorValue: {str(e)}")
