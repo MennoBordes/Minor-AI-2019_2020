@@ -14,11 +14,14 @@ import DQN.graph as graph
 from DQN.ai_cruise import AI_Cruise
 # Landing model
 from DQN.ai_landing import AI_Landing
-physical_devices = tf.config.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(physical_devices[0], True)
 # Takeoff model
 # from DQN.ai_takeoff import AI_Takeoff
 
+try:
+    physical_devices = tf.config.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+except:
+    pass
 
 DISCOUNT = 0.99
 REPLAY_MEMORY_SIZE = 50000
