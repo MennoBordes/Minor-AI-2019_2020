@@ -36,8 +36,8 @@ cd ..
 In case of running the AI for taking off, run the following code:
 ```
 cd AI_takeoff/customGym
-pip install -e.
-cd ..
+pip install -e .
+cd ../..
 ```
 
 # 3 X-plane setup
@@ -77,26 +77,27 @@ Since there are multiple AI's which can be chosen, it is important to start at t
 is specified in the current_training_model.py file.
 
 * TakeOff
-    * In case of TakeOff go to ./AI_takeoff/DeepQ/main.py and run
     * Within Xplane, start a new flight from **Schiphol** with the following customization:
         * Starting from the ramp/~~runway~~ 
         * At apron S82R
+    * After making sure the proper location has been set, start the flight.
+    * Once the flight has finished loading, you can run the ./AI_takeoff/DeepQ/main.py file.
 
 * Cruise:
     * Make sure current_training (_within current_training_model.py_) is set to training_Cruise
     * Within Xplane, start a new flight from **Schiphol** with the following customization:
         * Starting from the ~~ramp~~/runway with a 10 nm approach
         * At runway 18R
+    * After making sure the proper location has been set, start the flight.
+    * Once the flight has finished loading, you can run the DQN_2.py file.
 
 * Landing: 
     * Make sure current_training (_within current_training_model.py_) is set to training_Landing
     * Within Xplane, start a new flight from **Schiphol** with the following customization:
         * Starting from the ~~ramp~~/runway with a 3 nm approach
         * At runway 27
-
-After making sure the proper location has been set, start the flight.
-\
-Once the flight has finished loading, you can run the DQN_2.py file.
+    * After making sure the proper location has been set, start the flight.
+    * Once the flight has finished loading, you can run the DQN_2.py file.
 
 ## Authors
 
