@@ -1,35 +1,35 @@
 import matplotlib.pyplot as plt
 from gym_xplane.envs import xpc2 as xpc
 
+def draw_used_fuel(human_fuel, ai_fuel):
 
-def draw_used_fuel(n_waypoints, human_fuel, ai_fuel):
     # Settings x and y labels
-    plt.xlabel('Waypoint')
+    plt.xlabel('Agent')
     plt.ylabel('Fuel')
     # Setting graph title
     plt.title('Human fuel vs AI fuel used')
-    
-    # Plotting two lines
-    x = [0, n_waypoints]
-    plt.plot(x, [0, human_fuel], 'r', label="Human fuel")
-    plt.plot(x, [0, ai_fuel], 'b', label="AI Fuel")
+
+    plt.bar("Human", human_fuel, 0.2)
+    plt.bar("AI", ai_fuel, 0.2)
+
     # Enabling labels
     plt.legend()
     # Showing the graph in a new desktop window
     plt.show()
 
 
-def draw_flight_time(n_waypoints, human_time, ai_time):
+def draw_flight_time(human_time, ai_time):
     # Settings x and y labels
-    plt.xlabel('Waypoint')
+    plt.xlabel('Agent')
     plt.ylabel('Time')
     # Setting graph title
     plt.title('Human time vs AI time flown')
     
     # Plotting two lines
-    x = [0, n_waypoints]
-    plt.plot(x, [0, human_time], 'g', label="Human time")
-    plt.plot(x, [0, ai_time], 'y', label="AI time")
+
+    plt.bar("human", human_time,0.2)
+    plt.bar("AI", ai_time, 0.2)
+
     # Enabling labels
     plt.legend()
     # Showing the graph in a new desktop window
@@ -73,5 +73,8 @@ def check_fuel():
 
 
 if __name__ == '__main__':
-    draw_used_fuel(5, (86775.2890625 - 86691.1015625), (86865.0859375 - 86862.0546875))
-    draw_flight_time(5, (114.07035064697266 - 53.66834259033203), (100.80402374267578 - 57.989952087402344))
+    # draw_used_fuel(5, (86775.2890625 - 86691.1015625), (86865.0859375 - 86862.0546875))
+    # draw_flight_time(5, (114.07035064697266 - 53.66834259033203), (100.80402374267578 - 57.989952087402344))
+    draw_used_fuel(1.703125, 62.6015625)
+    draw_flight_time(25.51291275024414, 28.793968200683594)
+
