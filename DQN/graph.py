@@ -70,3 +70,7 @@ def check_fuel():
         dataref = "sim/flightmodel/weight/m_fuel_total"
         fuel = client.getDREF(dataref)
         return fuel
+
+
+if __name__ == '__main__':
+    draw_used_fuel(5, (86775.2890625 - 86691.1015625), (86865.0859375 - 86862.0546875))
