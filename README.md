@@ -33,7 +33,7 @@ cd gym-xplane
 pip install -e .
 cd ..
 ```
-In case of running the AI for taking off, run the following code:
+In case of running the AI for take off, run the following code:
 ```
 cd AI_takeoff/customGym
 pip install -e .
