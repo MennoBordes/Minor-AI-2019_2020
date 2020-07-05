@@ -35,8 +35,7 @@ def draw_flight_time(human_time, ai_time):
 
 def check_time():
     print("Setting next waypoint")
-    with xpc.XPlaneConnect(clientAddr='0.0.0.0', xpHost='127.0.0.1', xpPort=49009, clientPort= 0,
-            timeout= 3000, max_episode_steps= 2000) as client:
+    with xpc.XPlaneConnect() as client:
         # Verify connection
         try:
             # If X-Plane does not respond to the request, a timeout error
@@ -52,9 +51,7 @@ def check_time():
 
 def check_fuel():
     print("Setting next waypoint")
-
-    with xpc.XPlaneConnect(clientAddr='0.0.0.0', xpHost='127.0.0.1', xpPort=49009, clientPort= 0,
-            timeout= 3000, max_episode_steps= 2000) as client:
+    with xpc.XPlaneConnect() as client:
         # Verify connection
         try:
             # If X-Plane does not respond to the request, a timeout error
