@@ -68,3 +68,22 @@ def check_fuel():
         fuel = client.getDREF(dataref)
         print(fuel)
     
+def bar_graph_fuel(human_fuel, ai_fuel):
+    plt.title('Human fuel vs AI fuel used')
+    plt.xlabel('Agent')
+    plt.ylabel('Fuel (kg)')
+    plt.bar("Human", human_fuel, 0.2)
+    plt.bar("AI", ai_fuel, 0.2)
+    plt.show()
+
+def bar_graph_time(human_time, ai_time):
+    plt.title('Human time vs AI time flown')
+    plt.xlabel('Agent')
+    plt.ylabel('Time (sec)')
+    plt.bar('Human', human_time, 0.2)
+    plt.bar('AI', ai_time, 0.2)
+    plt.show()
+
+
+# bar_graph_fuel(168.529296875, 130.5126953125)
+# bar_graph_time(108.01172637939453, 111.30653381347656)
