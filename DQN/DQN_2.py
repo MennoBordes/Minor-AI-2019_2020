@@ -80,9 +80,9 @@ EPSILON_DECAY = 0.99975
 MIN_EPSILON = 0.001
 
 # Load existing weights
-latest_weights = tf.train.latest_checkpoint("cp-2020-06-25T14-08-05.ckpt")
-agent.model.load_weights(latest_weights)
-agent.target_model.load_weights(latest_weights)
+# latest_weights = tf.train.latest_checkpoint("cp-2020-06-25T14-08-05.ckpt")
+# agent.model.load_weights(latest_weights)
+# agent.target_model.load_weights(latest_weights)
 
 ep_rewards = []
 highest_reward = -100
