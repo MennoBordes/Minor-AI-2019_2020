@@ -11,7 +11,6 @@ def draw_used_fuel(n_waypoints, human_fuel, ai_fuel):
     
     # Plotting two lines
     x = [0, n_waypoints]
-    print(x)
     plt.plot(x, [0, human_fuel], 'r', label="Human fuel")
     plt.plot(x, [0, ai_fuel], 'b', label="AI Fuel")
     # Enabling labels
@@ -29,7 +28,6 @@ def draw_flight_time(n_waypoints, human_time, ai_time):
     
     # Plotting two lines
     x = [0, n_waypoints]
-    print(x)
     plt.plot(x, [0, human_time], 'g', label="Human time")
     plt.plot(x, [0, ai_time], 'y', label="AI time")
     # Enabling labels
@@ -40,7 +38,8 @@ def draw_flight_time(n_waypoints, human_time, ai_time):
 
 def check_time():
     print("Setting next waypoint")
-    with xpc.XPlaneConnect() as client:
+    with xpc.XPlaneConnect(clientAddr='0.0.0.0', xpHost='127.0.0.1', xpPort=49009,
+                           clientPort=3, timeout=3000, max_episode_steps=5000) as client:
         # Verify connection
         try:
             # If X-Plane does not respond to the request, a timeout error
@@ -57,7 +56,8 @@ def check_time():
 
 def check_fuel():
     print("Setting next waypoint")
-    with xpc.XPlaneConnect() as client:
+    with xpc.XPlaneConnect(clientAddr='0.0.0.0', xpHost='127.0.0.1', xpPort=49009,
+                           clientPort=2, timeout=3000, max_episode_steps=5000) as client:
         # Verify connection
         try:
             # If X-Plane does not respond to the request, a timeout error
