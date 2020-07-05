@@ -6,10 +6,10 @@ We had chosen to create an AI pilot.
 ## Table of contents
 
 1. [Requirements And Installs](#1-requirements-and-installs)
-2. [X-plane setup](#3-x-plane-setup)
-3. [X-plane connect setup](#4-x-plane-connect-setup)
-4. [Gym environment](#2-gym-environment)
-5. [Run]
+2. [Gym environment](#2-gym-environment)
+3. [X-plane setup](#3-x-plane-setup)
+4. [X-plane connect setup](#4-x-plane-connect-setup)
+5. [Run](#5-run)
 
 # 1 Requirements and Installs
 Before continuing please ensure that the python version used in this environment matches the required python version
@@ -35,7 +35,7 @@ Please install Xplane from the [Xplane-11](https://www.x-plane.com/) website.
 \
 It is possible to use the Demo version, although it will result in automatic crashes after 15 minutes of play-time.  
 
-### 2.2 Check if X Plane is set up corectly:
+### 3.1 Check if X Plane is set up corectly:
 * Under Settings > Data output > General Data output > 
   * Network configuration is turned **ON**
   * IP address  =                   192.168.0.1
@@ -96,4 +96,4 @@ Once the flight has finished loading, you can run the DQN_2.py file.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/Skillerde6de/Minor-AI-2019_2020/blob/Master/LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/Skillerde6de/Minor-AI-2019_2020/blob/master/LICENSE) file for details
