@@ -151,6 +151,9 @@ for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
         time_end = graph.check_time()
         fuel_end = graph.check_fuel()
 
+        print(f'Fuel start: {fuel_start}, Fuel end: {fuel_end}')
+        print(f'Time start: {time_start}, Time end: {time_end}')
+
         # Save model if score is higher than previous highest score
         if episode_reward > highest_reward:
             # Set new highest reward
