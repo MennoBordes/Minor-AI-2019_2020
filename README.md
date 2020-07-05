@@ -21,12 +21,22 @@ automatically get installed.
 ```
 pip install -r requirements.txt
 ```
+In case of running the AI for take off, run the following code:
+```
+pip install tensorflow numpy matplotlib gym PyDirectInput PyGetWindow
+```
 
 # 2 Gym environment
 To install the gym_xplane environment run the following code: 
 ```
 cd gym-xplane
 pip install -e .
+cd ..
+```
+In case of running the AI for taking off, run the following code:
+```
+cd AI_takeoff/customGym
+pip install -e.
 cd ..
 ```
 
@@ -65,6 +75,8 @@ All files which may need to be accessed below are located in the
 
 Since there are multiple AI's which can be chosen, it is important to start at the proper location according for what
 is specified in the current_training_model.py file.
+
+Note: In case of TakeOff go to ./AI_takeoff/DeepQ/main.py and run
 
 * TakeOff
     * Make sure current_training (_within current_training_model.py_) is set to training_TakeOff
