@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 from gym_xplane.envs import xpc2 as xpc
 
+
 def draw_used_fuel(human_fuel, ai_fuel):
 
     # Settings x and y labels
     plt.xlabel('Agent')
-    plt.ylabel('Fuel')
+    plt.ylabel('Fuel (kg)')
     # Setting graph title
     plt.title('Human fuel vs AI fuel used')
 
@@ -21,7 +22,7 @@ def draw_used_fuel(human_fuel, ai_fuel):
 def draw_flight_time(human_time, ai_time):
     # Settings x and y labels
     plt.xlabel('Agent')
-    plt.ylabel('Time')
+    plt.ylabel('Time (sec)')
     # Setting graph title
     plt.title('Human time vs AI time flown')
     
