@@ -52,7 +52,7 @@ class AI_Landing(object):
 
         self.model = self.create_model()
 
-        latest_weights = tf.train.latest_checkpoint(self.checkpoint_dir)
+        latest_weights = "train_models/AI_LANDING__2020-06-25T10-55-22__448episode___-37.20reward__.h5"
         self.model.load_weights(latest_weights)
         # Target network
         self.target_model = self.create_model()

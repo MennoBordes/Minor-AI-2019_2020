@@ -4,4 +4,4 @@ training_TakeOff = AI_type.TakeOff
 training_Cruise = AI_type.Cruise
 training_Landing = AI_type.Landing
 
-current_training = training_Cruise
+current_training = training_Landing
