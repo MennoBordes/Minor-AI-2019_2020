@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 
 def get_waypoints():
-    file = open("customGym/custom_gym/envs/myxpc/take_off.json")
+    file = open("AI_takeoff/customGym/custom_gym/envs/myxpc/take_off.json")
     data = json.load(file)
     wp = []
     for point in data:
