@@ -47,7 +47,6 @@ elif current_training == AI_type.Landing:
     WAYPOINT_START_LAND = False
     CHECKPOINT_PATH = 'training_3/cp-{date}.ckpt'
 
-    #     TODO  UPDATE TO YOUR OWN MODEL
     agent = AI_Landing(LEARNING_RATE=LEARNING_RATE, DISCOUNT=DISCOUNT,
                       MINIBATCH_SIZE=MINIBATCH_SIZE, REPLAY_MEMORY_SIZE=REPLAY_MEMORY_SIZE,
                       UPDATE_COUNTER=UPDATE_TARGET_EVERY, checkpoint_path=CHECKPOINT_PATH)
@@ -90,7 +89,7 @@ highest_reward = -100
 
 AGGREGATE_STATS_EVERY = 2
 
-EPISODES = 1
+EPISODES = 1  # 500_000
 episode = 0
 
 # Using tqdm for tracking info about the episodes

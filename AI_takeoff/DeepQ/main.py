@@ -13,7 +13,7 @@ def main():
     n_games = 1
     # nn_input = obs()
     agent = Agent(learning_rate=lr, gamma=gam, epsilon=1.0, 
-        input_dims= (6,), n_actions=15, batch_size=32, file_name='saved_models/dq_model_2.h5')
+        input_dims= (6,), n_actions=15, batch_size=32, file_name='AI_takeoff/saved_models/dq_model_2.h5')
     scores = []
     total_steps = []
     eps_hist = []
