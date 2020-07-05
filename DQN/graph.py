@@ -38,7 +38,8 @@ def draw_flight_time(human_time, ai_time):
 
 def check_time():
     print("Setting next waypoint")
-    with xpc.XPlaneConnect() as client:
+    with xpc.XPlaneConnect(clientAddr='0.0.0.0', xpHost='127.0.0.1', xpPort=49009,
+                           clientPort=3, timeout=3000, max_episode_steps=5000) as client:
         # Verify connection
         try:
             # If X-Plane does not respond to the request, a timeout error
@@ -55,7 +56,8 @@ def check_time():
 
 def check_fuel():
     print("Setting next waypoint")
-    with xpc.XPlaneConnect() as client:
+    with xpc.XPlaneConnect(clientAddr='0.0.0.0', xpHost='127.0.0.1', xpPort=49009,
+                           clientPort=2, timeout=3000, max_episode_steps=5000) as client:
         # Verify connection
         try:
             # If X-Plane does not respond to the request, a timeout error
@@ -69,6 +71,13 @@ def check_fuel():
         fuel = client.getDREF(dataref)
         return fuel
 
-draw_used_fuel(1.703125, 62.6015625)
-draw_flight_time(25.51291275024414, 28.793968200683594)
+
+if __name__ == '__main__':
+    # Cruise:
+    draw_used_fuel((86870.0390625 - 86704.7109375), (86866.890625 - 86863.765625))
+    draw_flight_time((106.98492431640625 - 4.120603084564209), (20.452260971069336 - 4.673367023468018))
+
+    # Landing
+    # draw_used_fuel(1.703125, 62.6015625)
+    # draw_flight_time(25.51291275024414, 28.793968200683594)
 
