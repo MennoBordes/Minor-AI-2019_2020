@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from gym_xplane.envs import xpc2 as xpc
 
+
 def draw_used_fuel(n_waypoints, human_fuel, ai_fuel):
     # Settings x and y labels
     plt.xlabel('Waypoint')
@@ -9,10 +10,10 @@ def draw_used_fuel(n_waypoints, human_fuel, ai_fuel):
     plt.title('Human fuel vs AI fuel used')
     
     # Plotting two lines
-    x = [0,n_waypoints]
+    x = [0, n_waypoints]
     print(x)
-    plt.plot(x, [0, human_fuel],'r', label = "Human fuel")
-    plt.plot(x, [0, ai_fuel], 'b', label = "AI Fuel")
+    plt.plot(x, [0, human_fuel], 'r', label="Human fuel")
+    plt.plot(x, [0, ai_fuel], 'b', label="AI Fuel")
     # Enabling labels
     plt.legend()
     # Showing the graph in a new desktop window
@@ -27,10 +28,10 @@ def draw_flight_time(n_waypoints, human_time, ai_time):
     plt.title('Human time vs AI time flown')
     
     # Plotting two lines
-    x = [0,n_waypoints]
+    x = [0, n_waypoints]
     print(x)
-    plt.plot(x, [0, human_time],'g', label = "Human time")
-    plt.plot(x, [0, ai_time], 'y', label = "AI time")
+    plt.plot(x, [0, human_time], 'g', label="Human time")
+    plt.plot(x, [0, ai_time], 'y', label="AI time")
     # Enabling labels
     plt.legend()
     # Showing the graph in a new desktop window
@@ -48,6 +49,7 @@ def check_time():
         except:
             print("Error establishing connection to X-Plane.")
             print("Exiting...")
+            return 0
         dataref = "sim/time/total_flight_time_sec"
         flight_time = client.getDREF(dataref)
         return flight_time
@@ -64,7 +66,7 @@ def check_fuel():
         except:
             print("Error establishing connection to X-Plane.")
             print("Exiting...")
+            return 0
         dataref = "sim/flightmodel/weight/m_fuel_total"
         fuel = client.getDREF(dataref)
         return fuel
-    
