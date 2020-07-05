@@ -58,9 +58,9 @@ It is possible to use the Demo version, although it will result in automatic cra
 # 4 X-plane connect setup
 Visit [Xplane-connect](https://github.com/nasa/XPlaneConnect/releases) and download **Version 1.2.1**
 \
-Open the downloaded folder XPlaneConnect-1.2.1 > Open folder xpcPlugin > Select folder XplaneConnect
+Open the downloaded folder XPlaneConnect-1.2.1 > Open folder xpcPlugin > Select folder **XplaneConnect**
 \
-Copy folder **XPlaneConnect** to the Game Install folder > **Resources** > **plugins**
+Copy the **XPlaneConnect** folder to the Game Install folder > **Resources** > **plugins**
 
 ### 4.1 Testing X-plane connect installation
 In order to test whether the library has been correctly installed
