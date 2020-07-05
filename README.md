@@ -76,10 +76,8 @@ All files which may need to be accessed below are located in the
 Since there are multiple AI's which can be chosen, it is important to start at the proper location according for what
 is specified in the current_training_model.py file.
 
-Note: In case of TakeOff go to ./AI_takeoff/DeepQ/main.py and run
-
 * TakeOff
-    * Make sure current_training (_within current_training_model.py_) is set to training_TakeOff
+    * In case of TakeOff go to ./AI_takeoff/DeepQ/main.py and run
     * Within Xplane, start a new flight from **Schiphol** with the following customization:
         * Starting from the ramp/~~runway~~ 
         * At apron S82R
