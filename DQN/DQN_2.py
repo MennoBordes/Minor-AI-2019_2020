@@ -89,7 +89,7 @@ highest_reward = -100
 
 AGGREGATE_STATS_EVERY = 2
 
-EPISODES = 1  # 500_000
+EPISODES = 100  # 500_000
 episode = 0
 
 # Using tqdm for tracking info about the episodes
