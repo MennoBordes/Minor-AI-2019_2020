@@ -162,18 +162,7 @@ class AI_Cruise:
                 update_flaps = np.dot(reward, action[2])
             #     new_q = reward
 
-            # current_qs = current_qs_list[index]
-            # current_qs = (current_qs_list[0][index], current_qs_list[1][index], current_qs_list[2][index])
-            # print('current_qs: {} \nnew_q: {} action: {}'.format(current_qs, new_q, action))
-            # current_qs[action] = new_q
-            # print('current_qs_list: {}'.format(current_qs_list[0]))
             X.append(current_state)
-            # y1.append(current_qs_list[0][index])
-            # y2.append(current_qs_list[1][index])
-            # y3.append(current_qs_list[2][index])
-            # y1.append(future_steering)
-            # y2.append(future_gear)
-            # y3.append(future_flaps)
             y1.append(update_steering)
             y2.append(update_gear)
             y3.append(update_flaps)
